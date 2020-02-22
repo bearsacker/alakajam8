@@ -22,6 +22,8 @@ import com.guillot.engine.gui.GUI;
 
 public class Player implements Entity {
 
+    private static final int TILE_SIZE = 32;
+
     private int x;
 
     private int y;
@@ -34,6 +36,10 @@ public class Player implements Entity {
 
     private boolean holding;
 
+    private long lastAnimation;
+
+    private int animation;
+
     public Player(Map map, int x, int y) throws SlickException {
         this.map = map;
         this.x = x;
@@ -42,10 +48,19 @@ public class Player implements Entity {
         this.direction = BOTTOM;
 
         this.image = new Image("sprites/player.png");
+        this.animation = 0;
+        this.lastAnimation = System.currentTimeMillis();
     }
 
     @Override
     public void update() {
+        long time = System.currentTimeMillis();
+        if (time - lastAnimation > 250) {
+            animation++;
+            animation %= 2;
+            lastAnimation = time;
+        }
+
         if (GUI.get().isKeyPressed(KEY_Q) || Controller.get().isLeftPressed()) {
             if (direction != LEFT) {
                 direction = LEFT;
@@ -107,8 +122,11 @@ public class Player implements Entity {
 
     @Override
     public void draw(Graphics g) {
+        int frame = direction.getFrame() * 2 + animation;
+
         Integer depth = map.getTile(x, y);
-        g.drawImage(image, x * image.getWidth(), y * image.getHeight() + (5 - depth) * 8);
+        g.drawImage(image, x * TILE_SIZE, y * TILE_SIZE + (5 - depth) * 8 - 8, x * TILE_SIZE + TILE_SIZE,
+                y * TILE_SIZE + (5 - depth) * 8 - 8 + TILE_SIZE, frame * TILE_SIZE, 0, (frame + 1) * TILE_SIZE, TILE_SIZE);
     }
 
     public void drawCursor(Graphics g) {
