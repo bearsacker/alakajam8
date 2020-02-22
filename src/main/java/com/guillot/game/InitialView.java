@@ -25,7 +25,11 @@ public class InitialView extends View {
 
         map.update();
 
-        if (map.isComplete()) {
+        if (map.isComplete() && !map.isAnimating() && !map.isAnimationEnded()) {
+            map.launchAnimation();
+        }
+
+        if (map.isAnimationEnded()) {
             level++;
             map = new Map("maps/" + level + ".map");
         }

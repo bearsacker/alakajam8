@@ -23,6 +23,12 @@ public class Map implements Entity {
 
     private Graphics graphics;
 
+    private int animation;
+
+    private long lastAnimationTime;
+
+    private int animationDepth;
+
     public Map(String path) throws Exception {
         List<String> lines = Files.readAllLines(FileLoader.fileFromResource(path).toPath());
 
@@ -46,6 +52,7 @@ public class Map implements Entity {
 
         tileSheet = new Image("sprites/tilesheet.png");
         player = new Player(this, 0, 0);
+        animation = -1;
 
         image = new Image(getWidth() * TILE_SIZE, getHeight() * TILE_SIZE + (tileSheet.getHeight() - TILE_SIZE));
         graphics = image.getGraphics();
@@ -75,7 +82,34 @@ public class Map implements Entity {
 
     @Override
     public void update() {
-        player.update();
+        if (isAnimating()) {
+            long currentTime = System.currentTimeMillis();
+
+            if (currentTime - lastAnimationTime > 50) {
+                for (int i = 0; i < getWidth(); i++) {
+                    for (int j = 0; j < getHeight(); j++) {
+                        setTile(i, j, animationDepth);
+                    }
+                }
+
+                for (int i = animation; i >= 0; i--) {
+                    setTile(i, animation - i, animationDepth + 1);
+                }
+
+                for (int i = animation + 1; i >= 0; i--) {
+                    setTile(i, animation - 1 - i, animationDepth + 2);
+                }
+
+                for (int i = animation + 2; i >= 0; i--) {
+                    setTile(i, animation - 2 - i, animationDepth + 1);
+                }
+
+                animation++;
+                lastAnimationTime = currentTime;
+            }
+        } else {
+            player.update();
+        }
     }
 
     @Override
@@ -158,6 +192,14 @@ public class Map implements Entity {
         return difference <= 1;
     }
 
+    public Integer setTile(int x, int y, int depth) {
+        if (x < 0 || y < 0 || x >= getWidth() || y >= getHeight()) {
+            return null;
+        }
+
+        return tiles[x][y] = depth;
+    }
+
     public Integer getTile(int x, int y) {
         if (x < 0 || y < 0 || x >= getWidth() || y >= getHeight()) {
             return null;
@@ -193,4 +235,19 @@ public class Map implements Entity {
 
         return false;
     }
+
+    public boolean isAnimating() {
+        return animation >= 0 && !isAnimationEnded();
+    }
+
+    public void launchAnimation() {
+        animation = 0;
+        lastAnimationTime = System.currentTimeMillis();
+        animationDepth = getTile(0, 0);
+    }
+
+    public boolean isAnimationEnded() {
+        return animation >= getWidth() * 3;
+    }
+
 }
