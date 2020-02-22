@@ -38,7 +38,8 @@ public class TimedRunView extends View {
         level = 1;
         time = System.currentTimeMillis();
         map = new Map("maps/" + level + ".map");
-        sentence = new Text(map.getSentence(), 64, EngineConfig.HEIGHT - 64, Color.white);
+        sentence = new Text(map.getSentence(), 64, 80, Color.white);
+        sentence.setX(EngineConfig.WIDTH / 2 - sentence.getWidth() / 2);
 
         levelText = new Text("Level " + level, 32, 32, Color.yellow);
         timerText = new Text("", 0, 32, Color.yellow);
@@ -70,6 +71,7 @@ public class TimedRunView extends View {
                 try {
                     map = new Map("maps/" + level + ".map");
                     sentence.setText(map.getSentence());
+                    sentence.setX(EngineConfig.WIDTH / 2 - sentence.getWidth() / 2);
                 } catch (NullPointerException e) {
                     winView.setTimer(timerText.getText());
                     winView.setVisible(true);

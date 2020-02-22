@@ -28,8 +28,6 @@ public class MenuView extends View {
 
     private Button buttonEndless;
 
-    private Button buttonCommands;
-
     private Button buttonQuit;
 
     private int[][] tiles;
@@ -42,7 +40,7 @@ public class MenuView extends View {
 
     @Override
     public void start() throws Exception {
-        buttonRun = new Button("Timed Run", EngineConfig.WIDTH / 2 - 96, 192, 192, 32);
+        buttonRun = new Button("Timed Run", EngineConfig.WIDTH / 2 - 96, 240, 192, 32);
         buttonRun.setEvent(new Event() {
 
             @Override
@@ -51,13 +49,10 @@ public class MenuView extends View {
             }
         });
 
-        buttonEndless = new Button("Endless run", EngineConfig.WIDTH / 2 - 96, 240, 192, 32);
+        buttonEndless = new Button("Endless run", EngineConfig.WIDTH / 2 - 96, 288, 192, 32);
         buttonEndless.setEnabled(false);
 
-        buttonCommands = new Button("Commands", EngineConfig.WIDTH / 2 - 96, 320, 192, 32);
-        buttonCommands.setEnabled(false);
-
-        buttonQuit = new Button("Quit", EngineConfig.WIDTH / 2 - 96, 368, 192, 32);
+        buttonQuit = new Button("Quit", EngineConfig.WIDTH / 2 - 96, 384, 192, 32);
         buttonQuit.setEvent(new Event() {
 
             @Override
@@ -66,7 +61,7 @@ public class MenuView extends View {
             }
         });
 
-        add(buttonRun, buttonEndless, buttonCommands, buttonQuit);
+        add(buttonRun, buttonEndless, buttonQuit);
 
         tileSheet = new Image("sprites/tilesheet.png");
         water = new Image("sprites/water.png");
@@ -214,7 +209,6 @@ public class MenuView extends View {
     private void launchAnimation(View view) {
         viewToSwitch = view;
         animation = 0;
-        buttonCommands.setEnabled(false);
         buttonEndless.setEnabled(false);
         buttonQuit.setEnabled(false);
         buttonRun.setEnabled(false);
