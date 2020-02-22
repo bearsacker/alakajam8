@@ -20,8 +20,10 @@ public abstract class SubView extends Component {
 
     public abstract void stop() throws Exception;
 
-    public void add(Component c) {
-        components.add(c);
+    public void add(Component... components) {
+        for (Component component : components) {
+            this.components.add(component);
+        }
     }
 
     @Override

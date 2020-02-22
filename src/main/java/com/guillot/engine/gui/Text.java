@@ -43,6 +43,7 @@ public class Text extends Component {
 
     public void setText(String text) {
         this.text = text;
+        this.width = font.getWidth(text);
     }
 
     public Color getColor() {
