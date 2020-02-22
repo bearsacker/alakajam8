@@ -15,6 +15,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
+import com.guillot.engine.gui.Controller;
 import com.guillot.engine.gui.GUI;
 
 
@@ -44,7 +45,7 @@ public class Player implements Entity {
 
     @Override
     public void update() {
-        if (GUI.get().isKeyPressed(KEY_Q)) {
+        if (GUI.get().isKeyPressed(KEY_Q) || Controller.get().isLeftPressed()) {
             if (direction != LEFT) {
                 direction = LEFT;
             } else if (map.canWalkLeft(x, y)) {
@@ -52,7 +53,7 @@ public class Player implements Entity {
             }
         }
 
-        if (GUI.get().isKeyPressed(KEY_D)) {
+        if (GUI.get().isKeyPressed(KEY_D) || Controller.get().isRightPressed()) {
             if (direction != RIGHT) {
                 direction = RIGHT;
             } else if (map.canWalkRight(x, y)) {
@@ -60,7 +61,7 @@ public class Player implements Entity {
             }
         }
 
-        if (GUI.get().isKeyPressed(KEY_Z)) {
+        if (GUI.get().isKeyPressed(KEY_Z) || Controller.get().isUpPressed()) {
             if (direction != TOP) {
                 direction = TOP;
             } else if (map.canWalkTop(x, y)) {
@@ -68,7 +69,7 @@ public class Player implements Entity {
             }
         }
 
-        if (GUI.get().isKeyPressed(KEY_S)) {
+        if (GUI.get().isKeyPressed(KEY_S) || Controller.get().isDownPressed()) {
             if (direction != BOTTOM) {
                 direction = BOTTOM;
             } else if (map.canWalkBottom(x, y)) {
@@ -76,7 +77,7 @@ public class Player implements Entity {
             }
         }
 
-        if (GUI.get().isKeyPressed(KEY_E)) {
+        if (GUI.get().isKeyPressed(KEY_E) || Controller.get().isButtonPressed()) {
             int directionX = x;
             int directionY = y;
 

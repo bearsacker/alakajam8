@@ -67,11 +67,11 @@ public class Map implements Entity {
     }
 
     public boolean isComplete() {
-        int value = tiles[0][0];
+        Integer value = getTile(0, 0);
 
         for (int i = 0; i < getWidth(); i++) {
             for (int j = 0; j < getHeight(); j++) {
-                if (tiles[i][j] != value) {
+                if (getTile(i, j) != null && getTile(i, j) != value) {
                     return false;
                 }
             }

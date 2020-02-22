@@ -108,7 +108,11 @@ public class GUI {
             this.container = container;
         }
 
-        input = this.container.getInput();
+        if (input == null) {
+            input = this.container.getInput();
+            input.addControllerListener(Controller.get());
+        }
+
         mouseX = input.getMouseX();
         mouseY = input.getMouseY();
 
@@ -137,6 +141,8 @@ public class GUI {
             e.printStackTrace();
             switchView(new ViewException(e));
         }
+
+        Controller.get().update();
     }
 
     public void close() {
@@ -180,5 +186,17 @@ public class GUI {
 
     public Input getInput() {
         return input;
+    }
+
+    public void associate(Button button) {
+        for (int i = 0; i < input.getControllerCount(); i++) {
+            /*
+             * input. if (input.isControlPressed(i, button.getIdentifier()) && !input.getAssociated().contains(i)) { id = i;
+             * input.getAssociated().add(id); logger.info("XBox360 controller associated with id " + id);
+             * 
+             * int j = 0; for (String axisName : input.getAxisNames(id)) { Axis axis = Axis.getFromName(axisName); if (axis != null) {
+             * this.axis.add(axis); logger.info("\tAxis " + j + ": " + axis); } j++; } }
+             */
+        }
     }
 }
