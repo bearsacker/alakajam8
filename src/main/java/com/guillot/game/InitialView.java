@@ -1,6 +1,5 @@
 package com.guillot.game;
 
-import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 
@@ -11,13 +10,13 @@ public class InitialView extends View {
 
     private Map map;
 
-    private Player player;
+    private int level;
 
     @Override
     public void start() throws Exception {
-        setBackgroundColor(new Color(0.0f, 0.0f, 0.0f, 0.0f));
+        level = 1;
 
-        map = new Map("maps/1.map");
+        map = new Map("maps/" + level + ".map");
     }
 
     @Override
@@ -25,6 +24,11 @@ public class InitialView extends View {
         super.update();
 
         map.update();
+
+        if (map.isComplete()) {
+            level++;
+            map = new Map("maps/" + level + ".map");
+        }
     }
 
     @Override

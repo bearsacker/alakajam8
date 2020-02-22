@@ -3,7 +3,6 @@ package com.guillot.game;
 import java.nio.file.Files;
 import java.util.List;
 
-import org.apache.commons.math3.util.FastMath;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 
@@ -14,9 +13,9 @@ public class Map implements Entity {
 
     private final static int TILE_SIZE = 32;
 
-    private Image tilesSheet;
+    private Image tileSheet;
 
-    private int[][] tiles;
+    private Integer[][] tiles;
 
     private Player player;
 
@@ -31,23 +30,25 @@ public class Map implements Entity {
             String[] depths = lines.get(i).split(";");
 
             if (tiles == null) {
-                tiles = new int[depths.length][];
+                tiles = new Integer[depths.length][];
 
                 for (int j = 0; j < depths.length; j++) {
-                    tiles[j] = new int[lines.size()];
+                    tiles[j] = new Integer[lines.size()];
                 }
             }
 
             for (int j = 0; j < depths.length; j++) {
-                tiles[j][i] = Integer.parseInt(depths[j]);
+                if (!depths[j].equals(".")) {
+                    tiles[j][i] = Integer.parseInt(depths[j]);
+                }
             }
         }
 
-        image = new Image(getWidth() * TILE_SIZE, (getHeight() + 1) * TILE_SIZE);
-        graphics = image.getGraphics();
-
-        tilesSheet = new Image("sprites/tiles.png");
+        tileSheet = new Image("sprites/tilesheet.png");
         player = new Player(this, 0, 0);
+
+        image = new Image(getWidth() * TILE_SIZE, getHeight() * TILE_SIZE + (tileSheet.getHeight() - TILE_SIZE));
+        graphics = image.getGraphics();
     }
 
     public int getWidth() {
@@ -83,12 +84,14 @@ public class Map implements Entity {
 
         for (int i = 0; i < getWidth(); i++) {
             for (int j = 0; j < getHeight(); j++) {
-                int frame = tiles[i][j];
-                graphics.drawImage(tilesSheet, i * TILE_SIZE, j * TILE_SIZE, (i + 1) * TILE_SIZE, (j + 2) * TILE_SIZE, frame * TILE_SIZE, 0,
-                        (frame + 1) * TILE_SIZE, TILE_SIZE * 2);
+                Integer frame = tiles[i][j];
+                if (frame != null) {
+                    graphics.drawImage(tileSheet, i * TILE_SIZE, j * TILE_SIZE, (i + 1) * TILE_SIZE, j * TILE_SIZE + tileSheet.getHeight(),
+                            frame * TILE_SIZE, 0, (frame + 1) * TILE_SIZE, tileSheet.getHeight());
 
-                if (player.isAtPosition(i, j)) {
-                    player.draw(graphics);
+                    if (player.isAtPosition(i, j)) {
+                        player.draw(graphics);
+                    }
                 }
             }
         }
@@ -104,7 +107,12 @@ public class Map implements Entity {
             return false;
         }
 
-        int difference = FastMath.abs(tiles[x][y] - tiles[x - 1][y]);
+        Integer destination = getTile(x - 1, y);
+        if (destination == null) {
+            return false;
+        }
+
+        int difference = destination - tiles[x][y];
         return difference <= 1;
     }
 
@@ -113,7 +121,12 @@ public class Map implements Entity {
             return false;
         }
 
-        int difference = FastMath.abs(tiles[x][y] - tiles[x + 1][y]);
+        Integer destination = getTile(x + 1, y);
+        if (destination == null) {
+            return false;
+        }
+
+        int difference = destination - tiles[x][y];
         return difference <= 1;
     }
 
@@ -122,7 +135,12 @@ public class Map implements Entity {
             return false;
         }
 
-        int difference = FastMath.abs(tiles[x][y] - tiles[x][y - 1]);
+        Integer destination = getTile(x, y - 1);
+        if (destination == null) {
+            return false;
+        }
+
+        int difference = destination - tiles[x][y];
         return difference <= 1;
     }
 
@@ -131,31 +149,46 @@ public class Map implements Entity {
             return false;
         }
 
-        int difference = FastMath.abs(tiles[x][y] - tiles[x][y + 1]);
+        Integer destination = getTile(x, y + 1);
+        if (destination == null) {
+            return false;
+        }
+
+        int difference = destination - tiles[x][y];
         return difference <= 1;
     }
 
-    public int getTile(int x, int y) {
+    public Integer getTile(int x, int y) {
+        if (x < 0 || y < 0 || x >= getWidth() || y >= getHeight()) {
+            return null;
+        }
+
         return tiles[x][y];
     }
 
     public boolean increaseDepth(int x, int y, int targetX, int targetY) {
-        int difference = tiles[targetX][targetY] - tiles[x][y];
+        Integer target = getTile(targetX, targetY);
+        if (target != null) {
+            int difference = target - tiles[x][y];
 
-        if (tiles[targetX][targetY] < 4 && difference <= 0 && difference >= -1) {
-            tiles[targetX][targetY]++;
-            return true;
+            if (tiles[targetX][targetY] < 5 && difference <= 0) {
+                tiles[targetX][targetY]++;
+                return true;
+            }
         }
 
         return false;
     }
 
     public boolean decreaseDepth(int x, int y, int targetX, int targetY) {
-        int difference = tiles[targetX][targetY] - tiles[x][y];
+        Integer target = getTile(targetX, targetY);
+        if (target != null) {
+            int difference = target - tiles[x][y];
 
-        if (tiles[targetX][targetY] > 0 && difference == 1) {
-            tiles[targetX][targetY]--;
-            return true;
+            if (tiles[targetX][targetY] > 0 && difference == 1) {
+                tiles[targetX][targetY]--;
+                return true;
+            }
         }
 
         return false;

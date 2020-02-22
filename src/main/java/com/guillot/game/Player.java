@@ -105,8 +105,8 @@ public class Player implements Entity {
 
     @Override
     public void draw(Graphics g) {
-        int depth = map.getTile(x, y);
-        g.drawImage(image, x * image.getWidth(), (y + 1) * image.getHeight() - depth * image.getHeight() / 4);
+        Integer depth = map.getTile(x, y);
+        g.drawImage(image, x * image.getWidth(), y * image.getHeight() + (5 - depth) * 8);
     }
 
     public void drawCursor(Graphics g) {
@@ -128,13 +128,12 @@ public class Player implements Entity {
             break;
         }
 
-        if (directionX >= 0 && directionY >= 0 && directionX < map.getWidth() && directionY < map.getHeight()) {
-            int depth = map.getTile(directionX, directionY);
+        Integer depth = map.getTile(directionX, directionY);
+        if (depth != null) {
 
             g.setColor(Color.yellow);
-            g.drawRect(directionX * image.getWidth(), (directionY + 1) * image.getHeight() - depth * image.getHeight() / 4,
-                    image.getWidth(),
-                    image.getHeight());
+            g.drawRect(directionX * image.getWidth(), directionY * image.getHeight() + (5 - depth) * 8,
+                    image.getWidth(), image.getHeight() - 1);
         }
     }
 
