@@ -24,6 +24,7 @@ public class Game extends BasicGame {
 
         AppGameContainer app = new AppGameContainer(this);
         app.setDisplayMode(WIDTH, HEIGHT, FULLSCREEN);
+        app.setShowFPS(false);
         app.start();
     }
 
