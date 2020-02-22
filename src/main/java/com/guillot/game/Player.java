@@ -44,7 +44,7 @@ public class Player implements Entity {
 
     @Override
     public void update() {
-        if (GUI.get().isKeyPressed(KEY_Z)) {
+        if (GUI.get().isKeyPressed(KEY_Q)) {
             if (direction != LEFT) {
                 direction = LEFT;
             } else if (map.canWalkLeft(x, y)) {
@@ -52,7 +52,7 @@ public class Player implements Entity {
             }
         }
 
-        if (GUI.get().isKeyPressed(KEY_S)) {
+        if (GUI.get().isKeyPressed(KEY_D)) {
             if (direction != RIGHT) {
                 direction = RIGHT;
             } else if (map.canWalkRight(x, y)) {
@@ -60,7 +60,7 @@ public class Player implements Entity {
             }
         }
 
-        if (GUI.get().isKeyPressed(KEY_Q)) {
+        if (GUI.get().isKeyPressed(KEY_Z)) {
             if (direction != TOP) {
                 direction = TOP;
             } else if (map.canWalkTop(x, y)) {
@@ -68,7 +68,7 @@ public class Player implements Entity {
             }
         }
 
-        if (GUI.get().isKeyPressed(KEY_D)) {
+        if (GUI.get().isKeyPressed(KEY_S)) {
             if (direction != BOTTOM) {
                 direction = BOTTOM;
             } else if (map.canWalkBottom(x, y)) {
@@ -106,7 +106,7 @@ public class Player implements Entity {
     @Override
     public void draw(Graphics g) {
         int depth = map.getTile(x, y);
-        g.drawImage(image, y * image.getWidth(), (x + 1) * image.getHeight() - depth * image.getHeight() / 4);
+        g.drawImage(image, x * image.getWidth(), (y + 1) * image.getHeight() - depth * image.getHeight() / 4);
     }
 
     public void drawCursor(Graphics g) {
@@ -128,11 +128,14 @@ public class Player implements Entity {
             break;
         }
 
-        int depth = map.getTile(directionX, directionY);
+        if (directionX >= 0 && directionY >= 0 && directionX < map.getWidth() && directionY < map.getHeight()) {
+            int depth = map.getTile(directionX, directionY);
 
-        g.setColor(Color.yellow);
-        g.drawRect(directionY * image.getWidth(), (directionX + 1) * image.getHeight() - depth * image.getHeight() / 4, image.getWidth(),
-                image.getHeight());
+            g.setColor(Color.yellow);
+            g.drawRect(directionX * image.getWidth(), (directionY + 1) * image.getHeight() - depth * image.getHeight() / 4,
+                    image.getWidth(),
+                    image.getHeight());
+        }
     }
 
     public boolean isAtPosition(int x, int y) {

@@ -26,14 +26,20 @@ public class Map implements Entity {
 
     public Map(String path) throws Exception {
         List<String> lines = Files.readAllLines(FileLoader.fileFromResource(path).toPath());
-        tiles = new int[lines.size()][];
 
         for (int i = 0; i < lines.size(); i++) {
             String[] depths = lines.get(i).split(";");
-            tiles[i] = new int[depths.length];
+
+            if (tiles == null) {
+                tiles = new int[depths.length][];
+
+                for (int j = 0; j < depths.length; j++) {
+                    tiles[j] = new int[lines.size()];
+                }
+            }
 
             for (int j = 0; j < depths.length; j++) {
-                tiles[i][j] = Integer.parseInt(depths[j]);
+                tiles[j][i] = Integer.parseInt(depths[j]);
             }
         }
 
@@ -77,11 +83,11 @@ public class Map implements Entity {
 
         for (int i = 0; i < getWidth(); i++) {
             for (int j = 0; j < getHeight(); j++) {
-                int frame = tiles[j][i];
+                int frame = tiles[i][j];
                 graphics.drawImage(tilesSheet, i * TILE_SIZE, j * TILE_SIZE, (i + 1) * TILE_SIZE, (j + 2) * TILE_SIZE, frame * TILE_SIZE, 0,
                         (frame + 1) * TILE_SIZE, TILE_SIZE * 2);
 
-                if (player.isAtPosition(j, i)) {
+                if (player.isAtPosition(i, j)) {
                     player.draw(graphics);
                 }
             }
