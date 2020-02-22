@@ -12,6 +12,8 @@ public final class EngineConfig extends Config {
 
     public final static boolean FULLSCREEN = get().getBoolean("engine.fullscreen");
 
+    public final static int FPS = get().getInt("engine.fps");
+
     private EngineConfig(String file) {
         super(file);
     }

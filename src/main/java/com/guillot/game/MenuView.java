@@ -182,6 +182,6 @@ public class MenuView extends View {
     }
 
     public static void main(String[] args) throws SlickException {
-        new Game("Everyone hates depth", new MenuView());
+        new Game("Everyone hates depth", "sprites/icon.png", new MenuView());
     }
 }

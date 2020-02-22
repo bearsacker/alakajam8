@@ -1,5 +1,6 @@
 package com.guillot.engine;
 
+import static com.guillot.engine.configs.EngineConfig.FPS;
 import static com.guillot.engine.configs.EngineConfig.FULLSCREEN;
 import static com.guillot.engine.configs.EngineConfig.HEIGHT;
 import static com.guillot.engine.configs.EngineConfig.WIDTH;
@@ -18,6 +19,10 @@ public class Game extends BasicGame {
     private View initialView;
 
     public Game(String title, View initialView) throws SlickException {
+        this(title, null, initialView);
+    }
+
+    public Game(String title, String icon, View initialView) throws SlickException {
         super(title);
 
         this.initialView = initialView;
@@ -25,7 +30,12 @@ public class Game extends BasicGame {
         AppGameContainer app = new AppGameContainer(this);
         app.setDisplayMode(WIDTH, HEIGHT, FULLSCREEN);
         app.setShowFPS(false);
-        app.setTargetFrameRate(200);
+        if (icon != null) {
+            app.setIcon(icon);
+        }
+        if (FPS > 0) {
+            app.setTargetFrameRate(FPS);
+        }
         app.start();
     }
 
