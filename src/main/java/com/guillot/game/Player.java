@@ -141,4 +141,20 @@ public class Player implements Entity {
     public boolean isAtPosition(int x, int y) {
         return this.x == x && this.y == y;
     }
+
+    public boolean isBlocked() {
+        return !map.canWalkTop(x, y) && !map.canWalkBottom(x, y) && !map.canWalkLeft(x, y) && !map.canWalkRight(x, y);
+    }
+
+    public boolean isDrowned() {
+        return getDepth() < 0;
+    }
+
+    public Integer getDepth() {
+        return map.getTile(x, y);
+    }
+
+    public boolean isHolding() {
+        return holding;
+    }
 }

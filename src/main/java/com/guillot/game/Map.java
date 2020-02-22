@@ -3,6 +3,7 @@ package com.guillot.game;
 import java.nio.file.Files;
 import java.util.List;
 
+import org.apache.commons.math3.util.FastMath;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 
@@ -14,6 +15,8 @@ public class Map implements Entity {
     private final static int TILE_SIZE = 32;
 
     private Image tileSheet;
+
+    private Image water;
 
     private Integer[][] tiles;
 
@@ -51,6 +54,7 @@ public class Map implements Entity {
         }
 
         tileSheet = new Image("sprites/tilesheet.png");
+        water = new Image("sprites/water.png");
         player = new Player(this, 0, 0);
         animation = -1;
 
@@ -67,11 +71,11 @@ public class Map implements Entity {
     }
 
     public boolean isComplete() {
-        Integer value = getTile(0, 0);
+        Integer value = FastMath.abs(getTile(0, 0));
 
         for (int i = 0; i < getWidth(); i++) {
             for (int j = 0; j < getHeight(); j++) {
-                if (getTile(i, j) != null && getTile(i, j) != value) {
+                if (getTile(i, j) != null && FastMath.abs(getTile(i, j)) != value) {
                     return false;
                 }
             }
@@ -109,6 +113,29 @@ public class Map implements Entity {
             }
         } else {
             player.update();
+
+            for (int i = 0; i < getWidth(); i++) {
+                for (int j = 0; j < getHeight(); j++) {
+                    Integer depth = getTile(i, j);
+                    if (depth < 0) {
+                        if (getTile(i - 1, j) != null && getTile(i - 1, j) < FastMath.abs(depth)) {
+                            setTile(i - 1, j, depth);
+                        }
+
+                        if (getTile(i + 1, j) != null && getTile(i + 1, j) < FastMath.abs(depth)) {
+                            setTile(i + 1, j, depth);
+                        }
+
+                        if (getTile(i, j - 1) != null && getTile(i, j - 1) < FastMath.abs(depth)) {
+                            setTile(i, j - 1, depth);
+                        }
+
+                        if (getTile(i, j + 1) != null && getTile(i, j + 1) < FastMath.abs(depth)) {
+                            setTile(i, j + 1, depth);
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -118,10 +145,20 @@ public class Map implements Entity {
 
         for (int i = 0; i < getWidth(); i++) {
             for (int j = 0; j < getHeight(); j++) {
-                Integer frame = tiles[i][j];
+                Integer frame = getTile(i, j);
                 if (frame != null) {
-                    graphics.drawImage(tileSheet, i * TILE_SIZE, j * TILE_SIZE, (i + 1) * TILE_SIZE, j * TILE_SIZE + tileSheet.getHeight(),
-                            frame * TILE_SIZE, 0, (frame + 1) * TILE_SIZE, tileSheet.getHeight());
+                    boolean isWater = frame < 0;
+                    if (isWater) {
+                        frame = FastMath.abs(frame) - 1;
+                    }
+
+                    graphics.drawImage(tileSheet, i * TILE_SIZE, j * TILE_SIZE, (i + 1) * TILE_SIZE,
+                            j * TILE_SIZE + tileSheet.getHeight(), frame * TILE_SIZE, 0, (frame + 1) * TILE_SIZE,
+                            tileSheet.getHeight());
+
+                    if (isWater) {
+                        graphics.drawImage(water, i * TILE_SIZE, (j + 1) * TILE_SIZE - frame * 8);
+                    }
 
                     if (player.isAtPosition(i, j)) {
                         player.draw(graphics);
@@ -248,6 +285,14 @@ public class Map implements Entity {
 
     public boolean isAnimationEnded() {
         return animation >= getWidth() * 3;
+    }
+
+    public boolean isBlocked() {
+        if (player.isBlocked() || player.isDrowned()) {
+            return true;
+        }
+
+        return false;
     }
 
 }

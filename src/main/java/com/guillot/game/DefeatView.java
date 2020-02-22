@@ -1,10 +1,13 @@
 package com.guillot.game;
 
+import static org.newdawn.slick.Input.KEY_SPACE;
+
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 
 import com.guillot.engine.configs.EngineConfig;
 import com.guillot.engine.gui.Button;
+import com.guillot.engine.gui.Controller;
 import com.guillot.engine.gui.Event;
 import com.guillot.engine.gui.GUI;
 import com.guillot.engine.gui.SubView;
@@ -14,7 +17,7 @@ public class DefeatView extends SubView {
 
     private final static Color OVERLAY = new Color(0f, 0f, 0f, .95f);
 
-    private InitialView parent;
+    private TimedRunView parent;
 
     private Button buttonRetry;
 
@@ -22,7 +25,7 @@ public class DefeatView extends SubView {
 
     private Text text;
 
-    public DefeatView(InitialView parent) {
+    public DefeatView(TimedRunView parent) {
         super(parent);
 
         this.parent = parent;
@@ -56,6 +59,10 @@ public class DefeatView extends SubView {
     @Override
     public void update() throws Exception {
         super.update();
+
+        if (GUI.get().isKeyPressed(KEY_SPACE) || Controller.get().isButtonPressed()) {
+            parent.retryLevel();
+        }
     }
 
     @Override

@@ -1,10 +1,13 @@
 package com.guillot.game;
 
+import static org.newdawn.slick.Input.KEY_SPACE;
+
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 
 import com.guillot.engine.configs.EngineConfig;
 import com.guillot.engine.gui.Button;
+import com.guillot.engine.gui.Controller;
 import com.guillot.engine.gui.Event;
 import com.guillot.engine.gui.GUI;
 import com.guillot.engine.gui.SubView;
@@ -43,6 +46,10 @@ public class WinView extends SubView {
     @Override
     public void update() throws Exception {
         super.update();
+
+        if (GUI.get().isKeyPressed(KEY_SPACE) || Controller.get().isButtonPressed()) {
+            GUI.get().switchView(new MenuView());
+        }
     }
 
     @Override

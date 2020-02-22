@@ -1,5 +1,7 @@
 package com.guillot.game;
 
+import static org.newdawn.slick.Input.KEY_SPACE;
+
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
@@ -7,6 +9,7 @@ import org.newdawn.slick.SlickException;
 import com.guillot.engine.Game;
 import com.guillot.engine.configs.EngineConfig;
 import com.guillot.engine.gui.Button;
+import com.guillot.engine.gui.Controller;
 import com.guillot.engine.gui.Event;
 import com.guillot.engine.gui.GUI;
 import com.guillot.engine.gui.View;
@@ -41,7 +44,7 @@ public class MenuView extends View {
 
             @Override
             public void perform() throws Exception {
-                launchAnimation(new InitialView());
+                launchAnimation(new TimedRunView());
             }
         });
 
@@ -77,8 +80,11 @@ public class MenuView extends View {
     public void update() throws Exception {
         super.update();
 
-        long currentTime = System.currentTimeMillis();
+        if (GUI.get().isKeyPressed(KEY_SPACE) || Controller.get().isButtonPressed()) {
+            launchAnimation(new TimedRunView());
+        }
 
+        long currentTime = System.currentTimeMillis();
         if (currentTime - lastAnimationTime > 50) {
             for (int i = animation; i >= 0; i--) {
                 Integer value = getTile(i, animation - i);
@@ -182,6 +188,6 @@ public class MenuView extends View {
     }
 
     public static void main(String[] args) throws SlickException {
-        new Game("Everyone hates depth", "sprites/icon.png", new MenuView());
+        new Game("Everyone hates depth", "sprites/icon.png", new TimedRunView());
     }
 }

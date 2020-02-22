@@ -13,7 +13,7 @@ import com.guillot.engine.gui.GUI;
 import com.guillot.engine.gui.Text;
 import com.guillot.engine.gui.View;
 
-public class InitialView extends View {
+public class TimedRunView extends View {
 
     private final static SimpleDateFormat TIMER_FORMAT = new SimpleDateFormat("mm:ss");
 
@@ -62,11 +62,19 @@ public class InitialView extends View {
             if (map.isAnimationEnded()) {
                 level++;
                 levelText.setText("Level " + level);
-                map = new Map("maps/" + level + ".map");
 
-                // winView.setTimer(timerText.getText());
-                // winView.setVisible(true);
-                defeatView.setVisible(true);
+                try {
+                    map = new Map("maps/" + level + ".map");
+                } catch (NullPointerException e) {
+                    winView.setTimer(timerText.getText());
+                    winView.setVisible(true);
+                }
+            }
+
+            if (!map.isComplete() && !map.isAnimating()) {
+                if (map.isBlocked()) {
+                    defeatView.setVisible(true);
+                }
             }
 
             if (GUI.get().isKeyPressed(KEY_ENTER)) {
