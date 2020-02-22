@@ -10,10 +10,12 @@ import org.newdawn.slick.Input;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.util.ResourceLoader;
 
+import com.guillot.engine.utils.FileLoader;
+
 
 public class GUI {
 
-    public final static String DEFAULT_FONT = "fonts/roboto.ttf";
+    public final static String DEFAULT_FONT = "fonts/8bits.ttf";
 
     private static GUI instance = new GUI();
 
@@ -41,12 +43,9 @@ public class GUI {
 
     private GUI() {
         try {
-            InputStream inputStream = ResourceLoader.getResourceAsStream(DEFAULT_FONT);
-
-            Font awtFont2 = Font.createFont(Font.TRUETYPE_FONT, inputStream);
-            awtFont2 = awtFont2.deriveFont(18f);
-            font = new TrueTypeFont(awtFont2, true);
-            inputStream.close();
+            Font awtFont = FileLoader.fontFromResource(DEFAULT_FONT);
+            awtFont = awtFont.deriveFont(24f);
+            font = new TrueTypeFont(awtFont, false);
 
             keysPressed = new boolean[256];
             mouseButtonsDown = new boolean[Mouse.getButtonCount()];
