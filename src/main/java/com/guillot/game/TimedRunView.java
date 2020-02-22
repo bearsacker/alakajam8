@@ -15,6 +15,8 @@ import com.guillot.engine.gui.View;
 
 public class TimedRunView extends View {
 
+    private final static Color BACKGROUND_COLOR = new Color(.4f, .6f, 1f);
+
     private final static SimpleDateFormat TIMER_FORMAT = new SimpleDateFormat("mm:ss");
 
     private Map map;
@@ -35,6 +37,8 @@ public class TimedRunView extends View {
 
     @Override
     public void start() throws Exception {
+        setBackgroundColor(BACKGROUND_COLOR);
+
         level = 1;
         time = System.currentTimeMillis();
         map = new Map("maps/" + level + ".map");
@@ -79,8 +83,10 @@ public class TimedRunView extends View {
             }
 
             if (!map.isComplete() && !map.isAnimating()) {
-                if (map.isBlocked()) {
+                DeathType death = map.isDead();
+                if (death != null) {
                     defeatView.setVisible(true);
+                    defeatView.setDeathType(death);
                 }
             }
 

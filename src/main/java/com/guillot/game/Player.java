@@ -123,6 +123,9 @@ public class Player implements Entity {
     @Override
     public void draw(Graphics g) {
         int frame = direction.getFrame() * 2 + animation;
+        if (holding) {
+            frame += 8;
+        }
 
         Integer depth = map.getTile(x, y);
         g.drawImage(image, x * TILE_SIZE, y * TILE_SIZE + (5 - depth) * 8 - 8, x * TILE_SIZE + TILE_SIZE,
@@ -153,8 +156,8 @@ public class Player implements Entity {
             depth = FastMath.abs(depth);
 
             g.setColor(Color.yellow);
-            g.drawRect(directionX * image.getWidth(), directionY * image.getHeight() + (5 - depth) * 8,
-                    image.getWidth(), image.getHeight() - 1);
+            g.drawRect(directionX * TILE_SIZE, directionY * TILE_SIZE + (5 - depth) * 8,
+                    TILE_SIZE, TILE_SIZE - 1);
         }
     }
 

@@ -328,12 +328,16 @@ public class Map implements Entity {
         return animation >= getWidth() * 3;
     }
 
-    public boolean isBlocked() {
-        if (player.isBlocked() || player.isDrowned()) {
-            return true;
+    public DeathType isDead() {
+        if (player.isBlocked()) {
+            return DeathType.BLOCKED;
         }
 
-        return false;
+        if (player.isDrowned()) {
+            return DeathType.DROWNED;
+        }
+
+        return null;
     }
 
     public String getSentence() {

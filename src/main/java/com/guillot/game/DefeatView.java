@@ -4,6 +4,7 @@ import static org.newdawn.slick.Input.KEY_SPACE;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 
 import com.guillot.engine.configs.EngineConfig;
 import com.guillot.engine.gui.Button;
@@ -15,7 +16,7 @@ import com.guillot.engine.gui.Text;
 
 public class DefeatView extends SubView {
 
-    private final static Color OVERLAY = new Color(0f, 0f, 0f, .95f);
+    private final static Color OVERLAY = new Color(0f, 0f, 0f, .75f);
 
     private TimedRunView parent;
 
@@ -25,6 +26,8 @@ public class DefeatView extends SubView {
 
     private Text text;
 
+    private Image portrait;
+
     public DefeatView(TimedRunView parent) {
         super(parent);
 
@@ -33,7 +36,9 @@ public class DefeatView extends SubView {
 
     @Override
     public void start() throws Exception {
-        text = new Text("Sorry!\nYou are blocked", 32, EngineConfig.HEIGHT - 128);
+        text = new Text("", 32, EngineConfig.HEIGHT - 128);
+
+        portrait = new Image("sprites/portrait.png");
 
         buttonRetry = new Button("Retry", EngineConfig.WIDTH / 4 - 64, EngineConfig.HEIGHT - 64, 128, 32);
         buttonRetry.setEvent(new Event() {
@@ -70,10 +75,24 @@ public class DefeatView extends SubView {
         g.setColor(OVERLAY);
         g.fillRect(x, EngineConfig.HEIGHT - 160, EngineConfig.WIDTH, 160);
 
+        g.drawImage(portrait, EngineConfig.WIDTH - portrait.getWidth() - 32, EngineConfig.HEIGHT - 192);
+
         super.paint(g);
     }
 
     @Override
     public void stop() throws Exception {}
+
+
+    public void setDeathType(DeathType deathType) {
+        switch (deathType) {
+        case BLOCKED:
+            text.setText("Damn.\nI'm blocked.");
+            break;
+        case DROWNED:
+            text.setText("Glug-glug.., GLUG-GLUG!");
+            break;
+        }
+    }
 
 }
