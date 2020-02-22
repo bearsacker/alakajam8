@@ -7,9 +7,7 @@ import java.util.Date;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.SlickException;
 
-import com.guillot.engine.Game;
 import com.guillot.engine.configs.EngineConfig;
 import com.guillot.engine.gui.GUI;
 import com.guillot.engine.gui.Text;
@@ -89,7 +87,4 @@ public class InitialView extends View {
         defeatView.setVisible(false);
     }
 
-    public static void main(String[] args) throws SlickException {
-        new Game("Everyone hates depth", new InitialView());
-    }
 }

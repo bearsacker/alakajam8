@@ -192,12 +192,12 @@ public class Map implements Entity {
         return difference <= 1;
     }
 
-    public Integer setTile(int x, int y, int depth) {
+    public void setTile(int x, int y, int depth) {
         if (x < 0 || y < 0 || x >= getWidth() || y >= getHeight()) {
-            return null;
+            return;
         }
 
-        return tiles[x][y] = depth;
+        tiles[x][y] = depth;
     }
 
     public Integer getTile(int x, int y) {

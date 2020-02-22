@@ -46,7 +46,7 @@ public class DefeatView extends SubView {
 
             @Override
             public void perform() throws Exception {
-                GUI.get().switchView(new InitialView());
+                GUI.get().switchView(new MenuView());
             }
         });
 
