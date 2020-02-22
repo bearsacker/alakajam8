@@ -9,13 +9,7 @@ public class Controller implements ControllerListener {
 
     private static Controller instance = new Controller();
 
-    private int leftPressed;
-
-    private int rightPressed;
-
-    private int upPressed;
-
-    private int downPressed;
+    private int[] directions;
 
     private boolean buttonPressed;
 
@@ -24,35 +18,19 @@ public class Controller implements ControllerListener {
     }
 
     private Controller() {
-        leftPressed = -1;
-        rightPressed = -1;
-        upPressed = -1;
-        downPressed = -1;
+        directions = new int[4];
+        for (int i = 0; i < directions.length; i++) {
+            directions[i] = -1;
+        }
     }
 
     public void update() {
-        if (leftPressed > 0) {
-            leftPressed--;
-        } else if (leftPressed == 0) {
-            leftPressed = BUFFER_SIZE;
-        }
-
-        if (rightPressed > 0) {
-            rightPressed--;
-        } else if (rightPressed == 0) {
-            rightPressed = BUFFER_SIZE;
-        }
-
-        if (upPressed > 0) {
-            upPressed--;
-        } else if (upPressed == 0) {
-            upPressed = BUFFER_SIZE;
-        }
-
-        if (downPressed > 0) {
-            downPressed--;
-        } else if (downPressed == 0) {
-            downPressed = BUFFER_SIZE;
+        for (int i = 0; i < directions.length; i++) {
+            if (directions[i] > 0) {
+                directions[i]--;
+            } else if (directions[i] == 0) {
+                directions[i] = BUFFER_SIZE;
+            }
         }
 
         buttonPressed = false;
@@ -80,42 +58,42 @@ public class Controller implements ControllerListener {
 
     @Override
     public void controllerLeftPressed(int controller) {
-        leftPressed = BUFFER_SIZE;
+        directions[0] = BUFFER_SIZE;
     }
 
     @Override
     public void controllerLeftReleased(int controller) {
-        leftPressed = -1;
+        directions[0] = -1;
     }
 
     @Override
     public void controllerRightPressed(int controller) {
-        rightPressed = BUFFER_SIZE;
+        directions[1] = BUFFER_SIZE;
     }
 
     @Override
     public void controllerRightReleased(int controller) {
-        rightPressed = -1;
+        directions[1] = -1;
     }
 
     @Override
     public void controllerUpPressed(int controller) {
-        upPressed = BUFFER_SIZE;
+        directions[2] = BUFFER_SIZE;
     }
 
     @Override
     public void controllerUpReleased(int controller) {
-        upPressed = -1;
+        directions[2] = -1;
     }
 
     @Override
     public void controllerDownPressed(int controller) {
-        downPressed = BUFFER_SIZE;
+        directions[3] = BUFFER_SIZE;
     }
 
     @Override
     public void controllerDownReleased(int controller) {
-        downPressed = -1;
+        directions[3] = -1;
     }
 
     @Override
@@ -129,19 +107,19 @@ public class Controller implements ControllerListener {
     }
 
     public boolean isLeftPressed() {
-        return leftPressed == BUFFER_SIZE;
+        return directions[0] == BUFFER_SIZE;
     }
 
     public boolean isRightPressed() {
-        return rightPressed == BUFFER_SIZE;
+        return directions[1] == BUFFER_SIZE;
     }
 
     public boolean isUpPressed() {
-        return upPressed == BUFFER_SIZE;
+        return directions[2] == BUFFER_SIZE;
     }
 
     public boolean isDownPressed() {
-        return downPressed == BUFFER_SIZE;
+        return directions[3] == BUFFER_SIZE;
     }
 
     public boolean isButtonPressed() {
