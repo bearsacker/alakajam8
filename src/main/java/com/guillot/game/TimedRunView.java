@@ -23,6 +23,8 @@ public class TimedRunView extends View {
 
     private Text timerText;
 
+    private Text sentence;
+
     private long time;
 
     private int level;
@@ -33,16 +35,18 @@ public class TimedRunView extends View {
 
     @Override
     public void start() throws Exception {
-        level = 6;
+        level = 1;
         time = System.currentTimeMillis();
         map = new Map("maps/" + level + ".map");
+        sentence = new Text(map.getSentence(), 64, EngineConfig.HEIGHT - 64, Color.white);
 
         levelText = new Text("Level " + level, 32, 32, Color.yellow);
         timerText = new Text("", 0, 32, Color.yellow);
+
         winView = new WinView(this);
         defeatView = new DefeatView(this);
 
-        add(levelText, timerText, winView, defeatView);
+        add(levelText, timerText, sentence, winView, defeatView);
     }
 
     @Override
@@ -65,6 +69,7 @@ public class TimedRunView extends View {
 
                 try {
                     map = new Map("maps/" + level + ".map");
+                    sentence.setText(map.getSentence());
                 } catch (NullPointerException e) {
                     winView.setTimer(timerText.getText());
                     winView.setVisible(true);

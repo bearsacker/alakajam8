@@ -22,6 +22,8 @@ public class Map implements Entity {
 
     private Player player;
 
+    private String sentence;
+
     private Image image;
 
     private Graphics graphics;
@@ -35,8 +37,8 @@ public class Map implements Entity {
     public Map(String path) throws Exception {
         List<String> lines = Files.readAllLines(FileLoader.fileFromResource(path).toPath());
 
-        for (int i = 0; i < lines.size(); i++) {
-            String[] depths = lines.get(i).split(";");
+        for (int i = 0; i < lines.size() - 1; i++) {
+            String[] depths = lines.get(i + 1).split(";");
 
             if (tiles == null) {
                 tiles = new Integer[depths.length][];
@@ -52,6 +54,8 @@ public class Map implements Entity {
                 }
             }
         }
+
+        sentence = lines.get(0);
 
         tileSheet = new Image("sprites/tilesheet.png");
         water = new Image("sprites/water.png");
@@ -332,4 +336,7 @@ public class Map implements Entity {
         return false;
     }
 
+    public String getSentence() {
+        return sentence;
+    }
 }
