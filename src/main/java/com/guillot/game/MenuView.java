@@ -2,6 +2,7 @@ package com.guillot.game;
 
 import static org.newdawn.slick.Input.KEY_SPACE;
 
+import org.apache.commons.math3.util.FastMath;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
@@ -20,6 +21,8 @@ public class MenuView extends View {
     private final static int TILE_SIZE = 32;
 
     private Image tileSheet;
+
+    private Image water;
 
     private Button buttonRun;
 
@@ -66,10 +69,12 @@ public class MenuView extends View {
         add(buttonRun, buttonEndless, buttonCommands, buttonQuit);
 
         tileSheet = new Image("sprites/tilesheet.png");
+        water = new Image("sprites/water.png");
+
         tiles = new int[getWidth()][getHeight()];
         for (int i = 0; i < getWidth(); i++) {
             for (int j = 0; j < getHeight(); j++) {
-                tiles[i][j] = NumberGenerator.get().randomInt(0, 4);
+                tiles[i][j] = NumberGenerator.get().randomInt(-2, 5);
             }
         }
 
@@ -82,6 +87,29 @@ public class MenuView extends View {
 
         if (GUI.get().isKeyPressed(KEY_SPACE) || Controller.get().isButtonPressed()) {
             launchAnimation(new TimedRunView());
+        }
+
+        for (int i = 0; i < getWidth(); i++) {
+            for (int j = 0; j < getHeight(); j++) {
+                Integer depth = getTile(i, j);
+                if (depth < 0) {
+                    if (getTile(i - 1, j) != null && getTile(i - 1, j) < FastMath.abs(depth)) {
+                        setTile(i - 1, j, depth);
+                    }
+
+                    if (getTile(i + 1, j) != null && getTile(i + 1, j) < FastMath.abs(depth)) {
+                        setTile(i + 1, j, depth);
+                    }
+
+                    if (getTile(i, j - 1) != null && getTile(i, j - 1) < FastMath.abs(depth)) {
+                        setTile(i, j - 1, depth);
+                    }
+
+                    if (getTile(i, j + 1) != null && getTile(i, j + 1) < FastMath.abs(depth)) {
+                        setTile(i, j + 1, depth);
+                    }
+                }
+            }
         }
 
         long currentTime = System.currentTimeMillis();
@@ -141,9 +169,18 @@ public class MenuView extends View {
             for (int j = 0; j < getHeight(); j++) {
                 int frame = tiles[i][j];
 
+                boolean isWater = frame < 0;
+                if (isWater) {
+                    frame = FastMath.abs(frame) - 1;
+                }
+
                 g.drawImage(tileSheet, i * TILE_SIZE, (j - 2) * TILE_SIZE, (i + 1) * TILE_SIZE,
                         (j - 2) * TILE_SIZE + tileSheet.getHeight(),
                         frame * TILE_SIZE, 0, (frame + 1) * TILE_SIZE, tileSheet.getHeight());
+
+                if (isWater) {
+                    g.drawImage(water, i * TILE_SIZE, (j - 1) * TILE_SIZE - frame * 8);
+                }
             }
         }
 
@@ -188,6 +225,6 @@ public class MenuView extends View {
     }
 
     public static void main(String[] args) throws SlickException {
-        new Game("Everyone hates depth", "sprites/icon.png", new TimedRunView());
+        new Game("Everyone hates depth", "sprites/icon.png", new MenuView());
     }
 }

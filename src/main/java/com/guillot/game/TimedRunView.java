@@ -33,7 +33,7 @@ public class TimedRunView extends View {
 
     @Override
     public void start() throws Exception {
-        level = 1;
+        level = 6;
         time = System.currentTimeMillis();
         map = new Map("maps/" + level + ".map");
 

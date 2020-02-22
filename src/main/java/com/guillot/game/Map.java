@@ -71,6 +71,10 @@ public class Map implements Entity {
     }
 
     public boolean isComplete() {
+        if (player.isHolding()) {
+            return false;
+        }
+
         Integer value = FastMath.abs(getTile(0, 0));
 
         for (int i = 0; i < getWidth(); i++) {
@@ -92,20 +96,47 @@ public class Map implements Entity {
             if (currentTime - lastAnimationTime > 50) {
                 for (int i = 0; i < getWidth(); i++) {
                     for (int j = 0; j < getHeight(); j++) {
-                        setTile(i, j, animationDepth);
+                        if (getTile(i, j) != null) {
+                            if (getTile(i, j) < 0) {
+                                setTile(i, j, -animationDepth);
+                            } else {
+                                setTile(i, j, animationDepth);
+                            }
+                        }
                     }
                 }
 
                 for (int i = animation; i >= 0; i--) {
-                    setTile(i, animation - i, animationDepth + 1);
+                    Integer depth = getTile(i, animation - i);
+                    if (depth != null) {
+                        if (depth < 0) {
+                            setTile(i, animation - i, -(animationDepth + 1));
+                        } else {
+                            setTile(i, animation - i, animationDepth + 1);
+                        }
+                    }
                 }
 
                 for (int i = animation + 1; i >= 0; i--) {
-                    setTile(i, animation - 1 - i, animationDepth + 2);
+                    Integer depth = getTile(i, animation - 1 - i);
+                    if (depth != null) {
+                        if (depth < 0) {
+                            setTile(i, animation - 1 - i, -(animationDepth + 2));
+                        } else {
+                            setTile(i, animation - 1 - i, animationDepth + 2);
+                        }
+                    }
                 }
 
                 for (int i = animation + 2; i >= 0; i--) {
-                    setTile(i, animation - 2 - i, animationDepth + 1);
+                    Integer depth = getTile(i, animation - 2 - i);
+                    if (depth != null) {
+                        if (depth < 0) {
+                            setTile(i, animation - 2 - i, -(animationDepth + 1));
+                        } else {
+                            setTile(i, animation - 2 - i, animationDepth + 1);
+                        }
+                    }
                 }
 
                 animation++;
@@ -117,7 +148,7 @@ public class Map implements Entity {
             for (int i = 0; i < getWidth(); i++) {
                 for (int j = 0; j < getHeight(); j++) {
                     Integer depth = getTile(i, j);
-                    if (depth < 0) {
+                    if (depth != null && depth < 0) {
                         if (getTile(i - 1, j) != null && getTile(i - 1, j) < FastMath.abs(depth)) {
                             setTile(i - 1, j, depth);
                         }
@@ -248,10 +279,16 @@ public class Map implements Entity {
     public boolean increaseDepth(int x, int y, int targetX, int targetY) {
         Integer target = getTile(targetX, targetY);
         if (target != null) {
-            int difference = target - tiles[x][y];
+            boolean isWater = target < 0;
+            int difference = FastMath.abs(target) - tiles[x][y];
 
             if (tiles[targetX][targetY] < 5 && difference <= 0) {
-                tiles[targetX][targetY]++;
+                if (isWater) {
+                    tiles[targetX][targetY] = FastMath.abs(target);
+                } else {
+                    tiles[targetX][targetY]++;
+                }
+
                 return true;
             }
         }

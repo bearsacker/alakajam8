@@ -10,6 +10,7 @@ import static org.newdawn.slick.Input.KEY_Q;
 import static org.newdawn.slick.Input.KEY_S;
 import static org.newdawn.slick.Input.KEY_Z;
 
+import org.apache.commons.math3.util.FastMath;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -131,6 +132,7 @@ public class Player implements Entity {
 
         Integer depth = map.getTile(directionX, directionY);
         if (depth != null) {
+            depth = FastMath.abs(depth);
 
             g.setColor(Color.yellow);
             g.drawRect(directionX * image.getWidth(), directionY * image.getHeight() + (5 - depth) * 8,
