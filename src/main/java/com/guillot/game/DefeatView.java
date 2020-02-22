@@ -16,7 +16,7 @@ import com.guillot.engine.gui.Text;
 
 public class DefeatView extends SubView {
 
-    private final static Color OVERLAY = new Color(0f, 0f, 0f, .75f);
+    private final static Color OVERLAY = new Color(0f, 0f, 0f, .7f);
 
     private TimedRunView parent;
 
@@ -28,14 +28,10 @@ public class DefeatView extends SubView {
 
     private Image portrait;
 
-    public DefeatView(TimedRunView parent) {
+    public DefeatView(TimedRunView parent) throws Exception {
         super(parent);
 
         this.parent = parent;
-    }
-
-    @Override
-    public void start() throws Exception {
         text = new Text("", 32, EngineConfig.HEIGHT - 128);
 
         portrait = new Image("sprites/portrait.png");
@@ -60,6 +56,9 @@ public class DefeatView extends SubView {
 
         add(text, buttonRetry, buttonMenu);
     }
+
+    @Override
+    public void start() throws Exception {}
 
     @Override
     public void update() throws Exception {

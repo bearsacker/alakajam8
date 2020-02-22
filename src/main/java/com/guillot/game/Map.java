@@ -329,12 +329,10 @@ public class Map implements Entity {
     }
 
     public DeathType isDead() {
-        if (player.isBlocked()) {
-            return DeathType.BLOCKED;
-        }
-
         if (player.isDrowned()) {
             return DeathType.DROWNED;
+        } else if (player.isBlocked()) {
+            return DeathType.BLOCKED;
         }
 
         return null;
