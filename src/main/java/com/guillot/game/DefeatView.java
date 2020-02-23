@@ -93,7 +93,7 @@ public class DefeatView extends SubView {
             frame = 0;
             break;
         case DROWNED:
-            text.setText("Glug-glug..?,\nGLUG-GLUG!!");
+            text.setText("Glug-glug..?\nGLUG-GLUG!!");
             frame = 1;
             break;
         }
