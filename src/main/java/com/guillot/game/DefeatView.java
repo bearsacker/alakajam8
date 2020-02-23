@@ -32,11 +32,11 @@ public class DefeatView extends SubView {
         super(parent);
 
         this.parent = parent;
-        text = new Text("", 32, EngineConfig.HEIGHT - 128);
+        text = new Text("", 144, EngineConfig.HEIGHT - 96);
 
         portrait = new Image("sprites/portrait.png");
 
-        buttonRetry = new Button("Retry", EngineConfig.WIDTH / 4 - 64, EngineConfig.HEIGHT - 64, 128, 32);
+        buttonRetry = new Button("Retry", EngineConfig.WIDTH - 160, EngineConfig.HEIGHT - 112, 128, 32);
         buttonRetry.setEvent(new Event() {
 
             @Override
@@ -45,7 +45,7 @@ public class DefeatView extends SubView {
             }
         });
 
-        buttonMenu = new Button("Menu", 3 * EngineConfig.WIDTH / 4 - 64, EngineConfig.HEIGHT - 64, 128, 32);
+        buttonMenu = new Button("Menu", EngineConfig.WIDTH - 160, EngineConfig.HEIGHT - 64, 128, 32);
         buttonMenu.setEvent(new Event() {
 
             @Override
@@ -72,9 +72,9 @@ public class DefeatView extends SubView {
     @Override
     public void paint(Graphics g) {
         g.setColor(OVERLAY);
-        g.fillRect(x, EngineConfig.HEIGHT - 160, EngineConfig.WIDTH, 160);
+        g.fillRect(x, EngineConfig.HEIGHT - 144, EngineConfig.WIDTH, 144);
 
-        g.drawImage(portrait, EngineConfig.WIDTH - portrait.getWidth() - 32, EngineConfig.HEIGHT - 192);
+        g.drawImage(portrait, 24, EngineConfig.HEIGHT - 127);
 
         super.paint(g);
     }
@@ -89,7 +89,7 @@ public class DefeatView extends SubView {
             text.setText("Damn.\nI'm blocked.");
             break;
         case DROWNED:
-            text.setText("Glug-glug.., GLUG-GLUG!");
+            text.setText("Glug-glug..?,\nGLUG-GLUG!!");
             break;
         }
     }
