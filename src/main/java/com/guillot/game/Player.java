@@ -114,8 +114,10 @@ public class Player implements Entity {
 
             if (holding && map.increaseDepth(x, y, directionX, directionY)) {
                 holding = !holding;
+                Sounds.DROP.getSound().play();
             } else if (!holding && map.decreaseDepth(x, y, directionX, directionY)) {
                 holding = !holding;
+                Sounds.TAKE.getSound().play();
             }
         }
     }

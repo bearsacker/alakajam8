@@ -9,6 +9,7 @@ import org.apache.commons.math3.util.FastMath;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.Sound;
 
 import com.guillot.engine.Game;
 import com.guillot.engine.configs.EngineConfig;
@@ -45,6 +46,8 @@ public class MenuView extends View {
 
     private List<Point> flowersPositions;
 
+    private Sound successSound;
+
     @Override
     public void start() throws Exception {
         buttonRun = new Button("Timed Run", EngineConfig.WIDTH / 2 - 96, 240, 192, 32);
@@ -74,6 +77,8 @@ public class MenuView extends View {
         water = new Image("sprites/water.png");
         flowers = new Image("sprites/flowers.png");
 
+        successSound = new Sound("sounds/success.wav");
+
         tiles = new int[getWidth()][getHeight()];
         for (int i = 0; i < getWidth(); i++) {
             for (int j = 0; j < getHeight(); j++) {
@@ -99,6 +104,7 @@ public class MenuView extends View {
 
         if (GUI.get().isKeyPressed(KEY_SPACE) || Controller.get().isButtonPressed()) {
             launchAnimation(new TimedRunView());
+            successSound.play();
         }
 
         for (int i = 0; i < getWidth(); i++) {
@@ -125,7 +131,7 @@ public class MenuView extends View {
         }
 
         long currentTime = System.currentTimeMillis();
-        if (currentTime - lastAnimationTime > 50) {
+        if (currentTime - lastAnimationTime > 40) {
             for (int i = animation; i >= 0; i--) {
                 Integer value = getTile(i, animation - i);
                 if (value != null && value < 2) {

@@ -68,6 +68,7 @@ public class TimedRunView extends View {
 
             if (map.isComplete() && !map.isAnimating() && !map.isAnimationEnded()) {
                 map.launchAnimation();
+                Sounds.SUCCESS.getSound().play();
             }
 
             if (map.isAnimationEnded()) {
@@ -87,8 +88,8 @@ public class TimedRunView extends View {
             if (!map.isComplete() && !map.isAnimating()) {
                 DeathType death = map.isDead();
                 if (death != null) {
-                    defeatView.setVisible(true);
                     defeatView.setDeathType(death);
+                    defeatView.setVisible(true);
                 }
             }
 

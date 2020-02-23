@@ -5,6 +5,7 @@ import static org.newdawn.slick.Input.KEY_SPACE;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.Sound;
 
 import com.guillot.engine.configs.EngineConfig;
 import com.guillot.engine.gui.Button;
@@ -25,6 +26,8 @@ public class DefeatView extends SubView {
     private Button buttonMenu;
 
     private Text text;
+
+    private Sound sound;
 
     private Image portrait;
 
@@ -61,7 +64,11 @@ public class DefeatView extends SubView {
     }
 
     @Override
-    public void start() throws Exception {}
+    public void start() throws Exception {
+        if (sound != null) {
+            sound.play();
+        }
+    }
 
     @Override
     public void update() throws Exception {
@@ -91,10 +98,12 @@ public class DefeatView extends SubView {
         case BLOCKED:
             text.setText("Damn.\nI'm blocked.");
             frame = 0;
+            sound = Sounds.BLOCKED.getSound();
             break;
         case DROWNED:
             text.setText("Glug-glug..?\nGLUG-GLUG!!");
             frame = 1;
+            sound = Sounds.DROWNED.getSound();
             break;
         }
     }

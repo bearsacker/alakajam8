@@ -113,7 +113,7 @@ public class Map implements Entity {
         if (isAnimating()) {
             long currentTime = System.currentTimeMillis();
 
-            if (currentTime - lastAnimationTime > 50) {
+            if (currentTime - lastAnimationTime > 75) {
                 for (int i = 0; i < getWidth(); i++) {
                     for (int j = 0; j < getHeight(); j++) {
                         if (getTile(i, j) != null) {
