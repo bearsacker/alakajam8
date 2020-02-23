@@ -75,7 +75,7 @@ public class Map implements Entity {
         flowersPositions = new ArrayList<>();
         for (int i = 0; i < getWidth(); i++) {
             for (int j = 0; j < getHeight(); j++) {
-                if (NumberGenerator.get().randomDouble() > .75f) {
+                if (NumberGenerator.get().randomDouble() > .8f) {
                     flowersPositions.add(new Point(i, j));
                 }
             }

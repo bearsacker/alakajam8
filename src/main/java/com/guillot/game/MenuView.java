@@ -2,6 +2,9 @@ package com.guillot.game;
 
 import static org.newdawn.slick.Input.KEY_SPACE;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.math3.util.FastMath;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -24,6 +27,8 @@ public class MenuView extends View {
 
     private Image water;
 
+    private Image flowers;
+
     private Button buttonRun;
 
     private Button buttonEndless;
@@ -37,6 +42,8 @@ public class MenuView extends View {
     private long lastAnimationTime;
 
     private View viewToSwitch;
+
+    private List<Point> flowersPositions;
 
     @Override
     public void start() throws Exception {
@@ -65,11 +72,21 @@ public class MenuView extends View {
 
         tileSheet = new Image("sprites/tilesheet.png");
         water = new Image("sprites/water.png");
+        flowers = new Image("sprites/flowers.png");
 
         tiles = new int[getWidth()][getHeight()];
         for (int i = 0; i < getWidth(); i++) {
             for (int j = 0; j < getHeight(); j++) {
                 tiles[i][j] = NumberGenerator.get().randomInt(-2, 5);
+            }
+        }
+
+        flowersPositions = new ArrayList<>();
+        for (int i = 0; i < getWidth(); i++) {
+            for (int j = 0; j < getHeight(); j++) {
+                if (NumberGenerator.get().randomDouble() > .8f) {
+                    flowersPositions.add(new Point(i, j));
+                }
             }
         }
 
@@ -175,6 +192,12 @@ public class MenuView extends View {
 
                 if (isWater) {
                     g.drawImage(water, i * TILE_SIZE, (j - 1) * TILE_SIZE - frame * 8);
+                } else if (flowersPositions.contains(new Point(i, j))) {
+                    int flowerFrame = (i + j) % 3;
+
+                    g.drawImage(flowers, i * TILE_SIZE, (j - 2) * TILE_SIZE + (5 - frame) * 8, (i + 1) * TILE_SIZE,
+                            (j - 1) * TILE_SIZE + (5 - frame) * 8, flowerFrame * TILE_SIZE, 0, (flowerFrame + 1) * TILE_SIZE,
+                            TILE_SIZE);
                 }
             }
         }
