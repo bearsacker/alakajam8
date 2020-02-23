@@ -127,7 +127,8 @@ public class Player implements Entity {
             frame += 8;
         }
 
-        Integer depth = map.getTile(x, y);
+        Integer depth = FastMath.max(0, map.getTile(x, y));
+
         g.drawImage(image, x * TILE_SIZE, y * TILE_SIZE + (5 - depth) * 8 - 8, x * TILE_SIZE + TILE_SIZE,
                 y * TILE_SIZE + (5 - depth) * 8 - 8 + TILE_SIZE, frame * TILE_SIZE, 0, (frame + 1) * TILE_SIZE, TILE_SIZE);
     }

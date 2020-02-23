@@ -28,13 +28,16 @@ public class DefeatView extends SubView {
 
     private Image portrait;
 
+    private int frame;
+
     public DefeatView(TimedRunView parent) throws Exception {
         super(parent);
 
         this.parent = parent;
-        text = new Text("", 144, EngineConfig.HEIGHT - 96);
+        text = new Text("", 144, EngineConfig.HEIGHT - 92);
 
         portrait = new Image("sprites/portrait.png");
+        frame = 0;
 
         buttonRetry = new Button("Retry", EngineConfig.WIDTH - 160, EngineConfig.HEIGHT - 112, 128, 32);
         buttonRetry.setEvent(new Event() {
@@ -74,7 +77,7 @@ public class DefeatView extends SubView {
         g.setColor(OVERLAY);
         g.fillRect(x, EngineConfig.HEIGHT - 144, EngineConfig.WIDTH, 144);
 
-        g.drawImage(portrait, 24, EngineConfig.HEIGHT - 127);
+        g.drawImage(portrait, 24, EngineConfig.HEIGHT - 120, 120, EngineConfig.HEIGHT - 24, frame * 144, 0, (frame + 1) * 144, 144);
 
         super.paint(g);
     }
@@ -87,9 +90,11 @@ public class DefeatView extends SubView {
         switch (deathType) {
         case BLOCKED:
             text.setText("Damn.\nI'm blocked.");
+            frame = 0;
             break;
         case DROWNED:
             text.setText("Glug-glug..?,\nGLUG-GLUG!!");
+            frame = 1;
             break;
         }
     }
