@@ -23,6 +23,8 @@ import com.guillot.engine.utils.NumberGenerator;
 
 public class MenuView extends View {
 
+    private final static Color YELLOW = new Color(1f, .9f, .2f);
+
     private final static int TILE_SIZE = 32;
 
     private Image tileSheet;
@@ -30,6 +32,8 @@ public class MenuView extends View {
     private Image water;
 
     private Image flowers;
+
+    private Image logo;
 
     private Button buttonRun;
 
@@ -72,10 +76,11 @@ public class MenuView extends View {
             }
         });
 
-        author = new Text("Bearsucker - 2020", 16, EngineConfig.HEIGHT - 24, Color.yellow);
+        author = new Text("Bearsucker - 2020", 16, EngineConfig.HEIGHT - 24, YELLOW);
 
         add(buttonRun, buttonEndless, buttonQuit, author);
 
+        logo = new Image("sprites/logo.png");
         tileSheet = new Image("sprites/tilesheet.png");
         water = new Image("sprites/water.png");
         flowers = new Image("sprites/flowers.png");
@@ -278,6 +283,8 @@ public class MenuView extends View {
                 }
             }
         }
+
+        g.drawImage(logo, EngineConfig.WIDTH / 2 - logo.getWidth() / 2, 80);
 
         super.paintComponents(g);
     }

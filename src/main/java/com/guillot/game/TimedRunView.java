@@ -19,6 +19,8 @@ public class TimedRunView extends View {
 
     private final static Color BACKGROUND_COLOR = new Color(.4f, .6f, 1f);
 
+    private final static Color YELLOW = new Color(1f, .9f, .2f);
+
     private final static SimpleDateFormat TIMER_FORMAT = new SimpleDateFormat("mm:ss");
 
     private Map map;
@@ -47,8 +49,8 @@ public class TimedRunView extends View {
         sentence = new Text(map.getSentence(), 64, 80, Color.white);
         sentence.setX(EngineConfig.WIDTH / 2 - sentence.getWidth() / 2);
 
-        levelText = new Text("Level " + level, 24, 14, Color.yellow);
-        timerText = new Text("", 0, 14, Color.yellow);
+        levelText = new Text("Level " + level, 24, 14, YELLOW);
+        timerText = new Text("", 0, 14, YELLOW);
 
         winView = new WinView(this);
         defeatView = new DefeatView(this);

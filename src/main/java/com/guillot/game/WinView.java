@@ -16,7 +16,7 @@ import com.guillot.engine.gui.View;
 
 public class WinView extends SubView {
 
-    private final static Color OVERLAY = new Color(0f, 0f, 0f, .95f);
+    private final static Color OVERLAY = new Color(0f, 0f, 0f, .7f);
 
     private Button buttonMenu;
 
@@ -41,6 +41,8 @@ public class WinView extends SubView {
         });
 
         add(text, buttonMenu);
+
+        Sounds.END.getSound().play();
     }
 
     @Override

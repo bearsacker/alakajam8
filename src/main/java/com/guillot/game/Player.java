@@ -22,6 +22,8 @@ import com.guillot.engine.gui.GUI;
 
 public class Player implements Entity {
 
+    private final static Color YELLOW = new Color(1f, .9f, .2f);
+
     private static final int TILE_SIZE = 32;
 
     private int x;
@@ -158,7 +160,7 @@ public class Player implements Entity {
         if (depth != null) {
             depth = FastMath.abs(depth);
 
-            g.setColor(Color.yellow);
+            g.setColor(YELLOW);
             g.drawRect(directionX * TILE_SIZE, directionY * TILE_SIZE + (5 - depth) * 8,
                     TILE_SIZE, TILE_SIZE - 1);
         }
