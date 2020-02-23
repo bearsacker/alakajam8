@@ -219,12 +219,12 @@ public class Map implements Entity {
 
                     if (player.isAtPosition(i, j)) {
                         player.draw(graphics);
+                    } else if (player.isLookingAtPosition(i, j)) {
+                        player.drawCursor(graphics);
                     }
                 }
             }
         }
-
-        player.drawCursor(graphics);
 
         g.drawImage(image, EngineConfig.WIDTH / 2 - image.getCenterOfRotationX(),
                 EngineConfig.HEIGHT / 2 - image.getCenterOfRotationY() + 32);

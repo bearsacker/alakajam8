@@ -162,12 +162,34 @@ public class Player implements Entity {
 
             g.setColor(YELLOW);
             g.drawRect(directionX * TILE_SIZE, directionY * TILE_SIZE + (5 - depth) * 8,
-                    TILE_SIZE, TILE_SIZE - 1);
+                    TILE_SIZE - 1, TILE_SIZE - 1);
         }
     }
 
     public boolean isAtPosition(int x, int y) {
         return this.x == x && this.y == y;
+    }
+
+    public boolean isLookingAtPosition(int x, int y) {
+        int directionX = this.x;
+        int directionY = this.y;
+
+        switch (direction) {
+        case BOTTOM:
+            directionY++;
+            break;
+        case LEFT:
+            directionX--;
+            break;
+        case RIGHT:
+            directionX++;
+            break;
+        case TOP:
+            directionY--;
+            break;
+        }
+
+        return directionX == x && directionY == y;
     }
 
     public boolean isBlocked() {
