@@ -65,6 +65,7 @@ public class MenuView extends View {
             @Override
             public void perform() throws Exception {
                 launchAnimation(new TimedRunView());
+                Sounds.SUCCESS.getSound().play();
             }
         });
 

@@ -1,8 +1,12 @@
 package com.guillot.game;
 
-import java.nio.file.Files;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.math3.util.FastMath;
 import org.newdawn.slick.Graphics;
@@ -41,7 +45,8 @@ public class Map implements Entity {
     private List<Point> flowersPositions;
 
     public Map(String path) throws Exception {
-        List<String> lines = Files.readAllLines(FileLoader.fileFromResource(path).toPath());
+        List<String> lines = new BufferedReader(new InputStreamReader(FileLoader.streamFromResource(path), UTF_8)).lines()
+                .collect(Collectors.toList());
 
         for (int i = 0; i < lines.size() - 1; i++) {
             String[] depths = lines.get(i + 1).split(";");
