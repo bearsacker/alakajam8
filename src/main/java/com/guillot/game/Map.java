@@ -205,7 +205,7 @@ public class Map implements Entity {
         player.drawCursor(graphics);
 
         g.drawImage(image, EngineConfig.WIDTH / 2 - image.getCenterOfRotationX(),
-                EngineConfig.HEIGHT / 2 - image.getCenterOfRotationY());
+                EngineConfig.HEIGHT / 2 - image.getCenterOfRotationY() + 32);
     }
 
     public boolean canWalkLeft(int x, int y) {

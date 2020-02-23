@@ -41,7 +41,7 @@ public class TimedRunView extends View {
     public void start() throws Exception {
         setBackgroundColor(BACKGROUND_COLOR);
 
-        level = 3;
+        level = 9;
         time = System.currentTimeMillis();
         map = new Map("maps/" + level + ".map");
         sentence = new Text(map.getSentence(), 64, 80, Color.white);
