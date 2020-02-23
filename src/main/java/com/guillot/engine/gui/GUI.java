@@ -93,6 +93,8 @@ public class GUI {
     }
 
     public void paint(Graphics g) {
+        g.scale(2f, 2f);
+
         try {
             if (currentView != null) {
                 currentView.paintComponents(g);

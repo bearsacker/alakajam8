@@ -28,7 +28,7 @@ public class Game extends BasicGame {
         this.initialView = initialView;
 
         AppGameContainer app = new AppGameContainer(this);
-        app.setDisplayMode(WIDTH, HEIGHT, FULLSCREEN);
+        app.setDisplayMode(WIDTH * 2, HEIGHT * 2, FULLSCREEN);
         app.setShowFPS(false);
         if (icon != null) {
             app.setIcon(icon);
