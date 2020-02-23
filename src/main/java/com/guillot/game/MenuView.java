@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.math3.util.FastMath;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
@@ -16,6 +17,7 @@ import com.guillot.engine.gui.Button;
 import com.guillot.engine.gui.Controller;
 import com.guillot.engine.gui.Event;
 import com.guillot.engine.gui.GUI;
+import com.guillot.engine.gui.Text;
 import com.guillot.engine.gui.View;
 import com.guillot.engine.utils.NumberGenerator;
 
@@ -34,6 +36,8 @@ public class MenuView extends View {
     private Button buttonEndless;
 
     private Button buttonQuit;
+
+    private Text author;
 
     private int[][] tiles;
 
@@ -68,7 +72,9 @@ public class MenuView extends View {
             }
         });
 
-        add(buttonRun, buttonEndless, buttonQuit);
+        author = new Text("Bearsucker - 2020", 16, EngineConfig.HEIGHT - 24, Color.yellow);
+
+        add(buttonRun, buttonEndless, buttonQuit, author);
 
         tileSheet = new Image("sprites/tilesheet.png");
         water = new Image("sprites/water.png");
