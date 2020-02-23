@@ -1,6 +1,7 @@
 package com.guillot.game;
 
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.math3.util.FastMath;
@@ -9,6 +10,7 @@ import org.newdawn.slick.Image;
 
 import com.guillot.engine.configs.EngineConfig;
 import com.guillot.engine.utils.FileLoader;
+import com.guillot.engine.utils.NumberGenerator;
 
 public class Map implements Entity {
 
@@ -17,6 +19,8 @@ public class Map implements Entity {
     private Image tileSheet;
 
     private Image water;
+
+    private Image flowers;
 
     private Integer[][] tiles;
 
@@ -33,6 +37,8 @@ public class Map implements Entity {
     private long lastAnimationTime;
 
     private int animationDepth;
+
+    private List<Point> flowersPositions;
 
     public Map(String path) throws Exception {
         List<String> lines = Files.readAllLines(FileLoader.fileFromResource(path).toPath());
@@ -59,11 +65,21 @@ public class Map implements Entity {
 
         tileSheet = new Image("sprites/tilesheet.png");
         water = new Image("sprites/water.png");
+        flowers = new Image("sprites/flowers.png");
         player = new Player(this, 0, 0);
         animation = -1;
 
         image = new Image(getWidth() * TILE_SIZE, getHeight() * TILE_SIZE + (tileSheet.getHeight() - TILE_SIZE));
         graphics = image.getGraphics();
+
+        flowersPositions = new ArrayList<>();
+        for (int i = 0; i < getWidth(); i++) {
+            for (int j = 0; j < getHeight(); j++) {
+                if (NumberGenerator.get().randomDouble() > .75f) {
+                    flowersPositions.add(new Point(i, j));
+                }
+            }
+        }
     }
 
     public int getWidth() {
@@ -193,6 +209,12 @@ public class Map implements Entity {
 
                     if (isWater) {
                         graphics.drawImage(water, i * TILE_SIZE, (j + 1) * TILE_SIZE - frame * 8);
+                    } else if (flowersPositions.contains(new Point(i, j))) {
+                        int flowerFrame = (i + j) % 3;
+
+                        graphics.drawImage(flowers, i * TILE_SIZE, j * TILE_SIZE + (5 - frame) * 8, (i + 1) * TILE_SIZE,
+                                (j + 1) * TILE_SIZE + (5 - frame) * 8, flowerFrame * TILE_SIZE, 0, (flowerFrame + 1) * TILE_SIZE,
+                                TILE_SIZE);
                     }
 
                     if (player.isAtPosition(i, j)) {
