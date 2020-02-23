@@ -5,7 +5,7 @@ import org.newdawn.slick.Sound;
 
 public enum Sounds {
     SUCCESS("sounds/success.wav"), TAKE("sounds/take.wav"), DROP("sounds/drop.wav"), BLOCKED("sounds/blocked.wav"), DROWNED(
-            "sounds/drowned.wav"), END("sounds/end.wav");
+            "sounds/drowned.wav"), END("sounds/end.wav"), MUSIC("sounds/music.ogg");
 
     private Sound sound;
 
