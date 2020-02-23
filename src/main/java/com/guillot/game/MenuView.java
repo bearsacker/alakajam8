@@ -35,6 +35,10 @@ public class MenuView extends View {
 
     private Image logo;
 
+    private Image image;
+
+    private Graphics graphics;
+
     private Button buttonRun;
 
     private Button buttonEndless;
@@ -90,6 +94,8 @@ public class MenuView extends View {
         water = new Image("sprites/water.png");
         flowers = new Image("sprites/flowers.png");
 
+        image = new Image(getWidth() * TILE_SIZE, getHeight() * TILE_SIZE);
+        graphics = image.getGraphics();
         tiles = new int[getWidth()][getHeight()];
 
         int numberSummits = NumberGenerator.get().randomInt(10, 30);
@@ -158,7 +164,7 @@ public class MenuView extends View {
     public void update() throws Exception {
         super.update();
 
-        if (GUI.get().isKeyPressed(KEY_SPACE) || Controller.get().isButtonPressed()) {
+        if (!isAnimating() && GUI.get().isKeyPressed(KEY_SPACE) || Controller.get().isButtonPressed()) {
             launchAnimation(new TimedRunView());
             Sounds.SUCCESS.getSound().play();
         }
@@ -264,6 +270,8 @@ public class MenuView extends View {
 
     @Override
     public void paintComponents(Graphics g) throws Exception {
+        graphics.clear();
+
         for (int i = 0; i < getWidth(); i++) {
             for (int j = 0; j < getHeight(); j++) {
                 int frame = tiles[i][j];
@@ -273,22 +281,23 @@ public class MenuView extends View {
                     frame = FastMath.abs(frame) - 1;
                 }
 
-                g.drawImage(tileSheet, i * TILE_SIZE, (j - 2) * TILE_SIZE, (i + 1) * TILE_SIZE,
+                graphics.drawImage(tileSheet, i * TILE_SIZE, (j - 2) * TILE_SIZE, (i + 1) * TILE_SIZE,
                         (j - 2) * TILE_SIZE + tileSheet.getHeight(),
                         frame * TILE_SIZE, 0, (frame + 1) * TILE_SIZE, tileSheet.getHeight());
 
                 if (isWater) {
-                    g.drawImage(water, i * TILE_SIZE, (j - 1) * TILE_SIZE - frame * 8);
+                    graphics.drawImage(water, i * TILE_SIZE, (j - 1) * TILE_SIZE - frame * 8);
                 } else if (flowersPositions.contains(new Point(i, j))) {
                     int flowerFrame = (i + j) % 3;
 
-                    g.drawImage(flowers, i * TILE_SIZE, (j - 2) * TILE_SIZE + (5 - frame) * 8, (i + 1) * TILE_SIZE,
+                    graphics.drawImage(flowers, i * TILE_SIZE, (j - 2) * TILE_SIZE + (5 - frame) * 8, (i + 1) * TILE_SIZE,
                             (j - 1) * TILE_SIZE + (5 - frame) * 8, flowerFrame * TILE_SIZE, 0, (flowerFrame + 1) * TILE_SIZE,
                             TILE_SIZE);
                 }
             }
         }
 
+        g.drawImage(image, 0, 0);
         g.drawImage(logo, EngineConfig.WIDTH / 2 - logo.getWidth() / 2, 80);
 
         super.paintComponents(g);
@@ -328,6 +337,10 @@ public class MenuView extends View {
 
     public boolean isAnimationEnded() {
         return animation >= getWidth() * 2 + 6;
+    }
+
+    public boolean isAnimating() {
+        return animation >= 0 && !isAnimationEnded();
     }
 
     public static void main(String[] args) throws SlickException {

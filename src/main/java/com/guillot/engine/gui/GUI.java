@@ -114,8 +114,8 @@ public class GUI {
             input.addControllerListener(Controller.get());
         }
 
-        mouseX = input.getMouseX();
-        mouseY = input.getMouseY();
+        mouseX = input.getMouseX() / 2;
+        mouseY = input.getMouseY() / 2;
 
         for (int i = 0; i < keysPressed.length; i++) {
             keysPressed[i] = input.isKeyPressed(i);

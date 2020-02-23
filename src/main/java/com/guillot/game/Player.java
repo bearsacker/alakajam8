@@ -4,16 +4,16 @@ import static com.guillot.game.Direction.BOTTOM;
 import static com.guillot.game.Direction.LEFT;
 import static com.guillot.game.Direction.RIGHT;
 import static com.guillot.game.Direction.TOP;
+import static org.newdawn.slick.Input.KEY_A;
 import static org.newdawn.slick.Input.KEY_D;
 import static org.newdawn.slick.Input.KEY_DOWN;
 import static org.newdawn.slick.Input.KEY_E;
 import static org.newdawn.slick.Input.KEY_LEFT;
-import static org.newdawn.slick.Input.KEY_Q;
 import static org.newdawn.slick.Input.KEY_RIGHT;
 import static org.newdawn.slick.Input.KEY_S;
 import static org.newdawn.slick.Input.KEY_SPACE;
 import static org.newdawn.slick.Input.KEY_UP;
-import static org.newdawn.slick.Input.KEY_Z;
+import static org.newdawn.slick.Input.KEY_W;
 
 import org.apache.commons.math3.util.FastMath;
 import org.newdawn.slick.Color;
@@ -68,7 +68,7 @@ public class Player implements Entity {
             lastAnimation = time;
         }
 
-        if (GUI.get().isKeyPressed(KEY_LEFT) || GUI.get().isKeyPressed(KEY_Q) || Controller.get().isLeftPressed()) {
+        if (GUI.get().isKeyPressed(KEY_LEFT) || GUI.get().isKeyPressed(KEY_A) || Controller.get().isLeftPressed()) {
             if (direction != LEFT) {
                 direction = LEFT;
             } else if (map.canWalkLeft(x, y)) {
@@ -84,7 +84,7 @@ public class Player implements Entity {
             }
         }
 
-        if (GUI.get().isKeyPressed(KEY_UP) || GUI.get().isKeyPressed(KEY_Z) || Controller.get().isUpPressed()) {
+        if (GUI.get().isKeyPressed(KEY_UP) || GUI.get().isKeyPressed(KEY_W) || Controller.get().isUpPressed()) {
             if (direction != TOP) {
                 direction = TOP;
             } else if (map.canWalkTop(x, y)) {
