@@ -11,14 +11,15 @@ import java.util.stream.Collectors;
 import org.apache.commons.math3.util.FastMath;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
 
 import com.guillot.engine.configs.EngineConfig;
 import com.guillot.engine.utils.FileLoader;
 import com.guillot.engine.utils.NumberGenerator;
 
-public class Map implements Entity {
+public class Map {
 
-    private final static int TILE_SIZE = 32;
+    public final static int TILE_SIZE = 32;
 
     private Image tileSheet;
 
@@ -44,7 +45,93 @@ public class Map implements Entity {
 
     private List<Point> flowersPositions;
 
+    private boolean playerCanMove;
+
+    public Map() throws SlickException {
+        tileSheet = new Image("sprites/tilesheet.png");
+        water = new Image("sprites/water.png");
+        flowers = new Image("sprites/flowers.png");
+        player = new Player(this, 0, 0);
+        animation = -1;
+        playerCanMove = true;
+    }
+
+    public Map(int width, int height) throws SlickException {
+        this();
+
+        tiles = new Integer[width][height];
+        for (int i = 0; i < getWidth(); i++) {
+            for (int j = 0; j < getHeight(); j++) {
+                tiles[i][j] = 0;
+            }
+        }
+
+        int numberSummits = NumberGenerator.get().randomInt(10, 30);
+        for (int i = 0; i < numberSummits; i++) {
+            int x = NumberGenerator.get().randomInt(getWidth());
+            int y = NumberGenerator.get().randomInt(getWidth());
+            int depth = NumberGenerator.get().randomInt(2, 5);
+
+            setTile(x, y, depth);
+            double type = NumberGenerator.get().randomDouble();
+
+            if (type < .25f) {
+                setTile(x + 1, y, depth);
+                setTile(x + 1, y - 1, depth);
+                setTile(x, y - 1, depth);
+            } else if (type < .4f) {
+                setTile(x + 1, y, depth);
+            } else if (type < .55f) {
+                setTile(x, y + 1, depth);
+            }
+        }
+
+        for (int k = 0; k < 5; k++) {
+            for (int i = 0; i < getWidth(); i++) {
+                for (int j = 0; j < getHeight(); j++) {
+                    if (getTile(i - 1, j) != null && getTile(i - 1, j) < getTile(i, j) - 1) {
+                        setTile(i - 1, j, getTile(i, j) - 1);
+                    }
+
+                    if (getTile(i + 1, j) != null && getTile(i + 1, j) < getTile(i, j) - 1) {
+                        setTile(i + 1, j, getTile(i, j) - 1);
+                    }
+
+                    if (getTile(i, j - 1) != null && getTile(i, j - 1) < getTile(i, j) - 1) {
+                        setTile(i, j - 1, getTile(i, j) - 1);
+                    }
+
+                    if (getTile(i, j + 1) != null && getTile(i, j + 1) < getTile(i, j) - 1) {
+                        setTile(i, j + 1, getTile(i, j) - 1);
+                    }
+                }
+            }
+        }
+
+        for (int i = 0; i < getWidth(); i++) {
+            for (int j = 0; j < getHeight(); j++) {
+                if (tiles[i][j] == 0) {
+                    tiles[i][j] = -1;
+                }
+            }
+        }
+
+        image = new Image(width * TILE_SIZE, height * TILE_SIZE + (tileSheet.getHeight() - TILE_SIZE));
+        graphics = image.getGraphics();
+
+        flowersPositions = new ArrayList<>();
+        for (int i = 0; i < getWidth(); i++) {
+            for (int j = 0; j < getHeight(); j++) {
+                if (NumberGenerator.get().randomDouble() > .8f) {
+                    flowersPositions.add(new Point(i, j));
+                }
+            }
+        }
+    }
+
     public Map(String path) throws Exception {
+        this();
+
         List<String> lines = new BufferedReader(new InputStreamReader(FileLoader.streamFromResource(path), UTF_8)).lines()
                 .collect(Collectors.toList());
 
@@ -67,12 +154,6 @@ public class Map implements Entity {
         }
 
         sentence = lines.get(0);
-
-        tileSheet = new Image("sprites/tilesheet.png");
-        water = new Image("sprites/water.png");
-        flowers = new Image("sprites/flowers.png");
-        player = new Player(this, 0, 0);
-        animation = -1;
 
         image = new Image(getWidth() * TILE_SIZE, getHeight() * TILE_SIZE + (tileSheet.getHeight() - TILE_SIZE));
         graphics = image.getGraphics();
@@ -113,7 +194,6 @@ public class Map implements Entity {
         return true;
     }
 
-    @Override
     public void update() {
         if (isAnimating()) {
             long currentTime = System.currentTimeMillis();
@@ -168,7 +248,9 @@ public class Map implements Entity {
                 lastAnimationTime = currentTime;
             }
         } else {
-            player.update();
+            if (playerCanMove) {
+                player.update();
+            }
 
             for (int i = 0; i < getWidth(); i++) {
                 for (int j = 0; j < getHeight(); j++) {
@@ -195,8 +277,7 @@ public class Map implements Entity {
         }
     }
 
-    @Override
-    public void draw(Graphics g) {
+    public void draw(Graphics g, float x, float y) {
         graphics.clear();
 
         for (int i = 0; i < getWidth(); i++) {
@@ -224,15 +305,19 @@ public class Map implements Entity {
 
                     if (player.isAtPosition(i, j)) {
                         player.draw(graphics);
-                    } else if (player.isLookingAtPosition(i, j)) {
+                    } else if (player.isLookingAtPosition(i, j) && playerCanMove) {
                         player.drawCursor(graphics);
                     }
                 }
             }
         }
 
-        g.drawImage(image, EngineConfig.WIDTH / 2 - image.getCenterOfRotationX(),
-                EngineConfig.HEIGHT / 2 - image.getCenterOfRotationY() + 32);
+        g.drawImage(image, x, y);
+    }
+
+    public void draw(Graphics g) {
+        draw(g, EngineConfig.WIDTH / 2 - image.getCenterOfRotationX(),
+                EngineConfig.HEIGHT / 2 - image.getCenterOfRotationY() + TILE_SIZE);
     }
 
     public boolean canWalkLeft(int x, int y) {
@@ -367,5 +452,16 @@ public class Map implements Entity {
 
     public String getSentence() {
         return sentence;
+    }
+
+    public void setPlayerPosition(int x, int y) {
+        if (x >= 0 && x < getWidth() && y >= 0 && y < getHeight()) {
+            player.setX(x);
+            player.setY(y);
+        }
+    }
+
+    public void setPlayerCanMove(boolean playerCanMove) {
+        this.playerCanMove = playerCanMove;
     }
 }

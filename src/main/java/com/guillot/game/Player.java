@@ -25,7 +25,7 @@ import com.guillot.engine.gui.Controller;
 import com.guillot.engine.gui.GUI;
 
 
-public class Player implements Entity {
+public class Player {
 
     private final static Color YELLOW = new Color(1f, .9f, .2f);
 
@@ -59,7 +59,6 @@ public class Player implements Entity {
         this.lastAnimation = System.currentTimeMillis();
     }
 
-    @Override
     public void update() {
         long time = System.currentTimeMillis();
         if (time - lastAnimation > 250) {
@@ -129,7 +128,6 @@ public class Player implements Entity {
         }
     }
 
-    @Override
     public void draw(Graphics g) {
         int frame = direction.getFrame() * 2 + animation;
         if (holding) {
@@ -211,5 +209,13 @@ public class Player implements Entity {
 
     public boolean isHolding() {
         return holding;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
     }
 }
