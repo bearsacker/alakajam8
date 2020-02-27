@@ -41,9 +41,7 @@ public class MenuView extends View {
 
             @Override
             public void perform() throws Exception {
-                map.launchAnimation();
-                viewToSwitch = new TimedRunView();
-                Sounds.SUCCESS.getSound().play();
+                launchTimedRun();
             }
         });
 
@@ -64,7 +62,6 @@ public class MenuView extends View {
         add(buttonRun, buttonEndless, buttonQuit, author);
 
         map = new Map(getWidth(), getHeight());
-        map.setPlayerCanMove(false);
     }
 
     @Override
@@ -72,9 +69,7 @@ public class MenuView extends View {
         super.update();
 
         if (!map.isAnimating() && GUI.get().isKeyPressed(KEY_SPACE) || Controller.get().isButtonPressed()) {
-            map.launchAnimation();
-            viewToSwitch = new TimedRunView();
-            Sounds.SUCCESS.getSound().play();
+            launchTimedRun();
         }
 
         if (map.isAnimationEnded() && viewToSwitch != null) {
@@ -92,12 +87,18 @@ public class MenuView extends View {
         super.paintComponents(g);
     }
 
+    public void launchTimedRun() {
+        map.launchAnimation();
+        viewToSwitch = new TimedRunView();
+        Sounds.SUCCESS.getSound().play();
+    }
+
     public int getWidth() {
-        return EngineConfig.WIDTH / Map.TILE_SIZE + 2;
+        return EngineConfig.WIDTH / Map.TILE_SIZE;
     }
 
     public int getHeight() {
-        return EngineConfig.HEIGHT / Map.TILE_SIZE + 2;
+        return EngineConfig.HEIGHT / Map.TILE_SIZE;
     }
 
     public static void main(String[] args) throws SlickException {

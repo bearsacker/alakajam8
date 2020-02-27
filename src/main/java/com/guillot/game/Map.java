@@ -34,12 +34,9 @@ public class Map {
 
     private long lastAnimationTime;
 
-    private boolean playerCanMove;
-
     public Map() throws SlickException {
         player = new Player(this);
         animation = -1;
-        playerCanMove = true;
     }
 
     public Map(int width, int height) throws SlickException {
@@ -210,9 +207,7 @@ public class Map {
                 lastAnimationTime = currentTime;
             }
         } else {
-            if (playerCanMove) {
-                player.update();
-            }
+            player.update();
 
             for (int i = 0; i < getWidth(); i++) {
                 for (int j = 0; j < getHeight(); j++) {
@@ -250,7 +245,7 @@ public class Map {
 
                     if (player.isAtPosition(i, j)) {
                         player.draw(graphics);
-                    } else if (player.isLookingAtPosition(i, j) && playerCanMove) {
+                    } else if (player.isLookingAtPosition(i, j)) {
                         player.drawCursor(graphics);
                     }
                 }
@@ -316,7 +311,7 @@ public class Map {
     }
 
     public boolean isAnimationEnded() {
-        return animation >= getWidth() * 3;
+        return animation >= getWidth() * 2 + 4;
     }
 
     public DeathType isDead() {
@@ -331,16 +326,5 @@ public class Map {
 
     public String getSentence() {
         return sentence;
-    }
-
-    public void setPlayerPosition(int x, int y) {
-        if (x >= 0 && x < getWidth() && y >= 0 && y < getHeight()) {
-            player.setX(x);
-            player.setY(y);
-        }
-    }
-
-    public void setPlayerCanMove(boolean playerCanMove) {
-        this.playerCanMove = playerCanMove;
     }
 }
