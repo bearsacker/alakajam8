@@ -1,14 +1,11 @@
 package com.guillot.game;
 
 import static com.guillot.game.Images.TILESHEET;
-import static com.guillot.game.Images.WATER;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.newdawn.slick.Graphics;
@@ -39,8 +36,6 @@ public class Map {
 
     private int animationDepth;
 
-    private ArrayList<Flower> flowers;
-
     private boolean playerCanMove;
 
     public Map() throws SlickException {
@@ -55,7 +50,7 @@ public class Map {
         tiles = new Tile[width][height];
         for (int i = 0; i < getWidth(); i++) {
             for (int j = 0; j < getHeight(); j++) {
-                tiles[i][j] = new Tile(0);
+                tiles[i][j] = new Tile(i, j, 0);
             }
         }
 
@@ -112,15 +107,6 @@ public class Map {
 
         image = new Image(width * TILE_SIZE, height * TILE_SIZE + (TILESHEET.getImage().getHeight() - TILE_SIZE));
         graphics = image.getGraphics();
-
-        flowers = new ArrayList<>();
-        for (int i = 0; i < getWidth(); i++) {
-            for (int j = 0; j < getHeight(); j++) {
-                if (NumberGenerator.get().randomDouble() > .8f) {
-                    flowers.add(new Flower(i, j));
-                }
-            }
-        }
     }
 
     public Map(String path) throws Exception {
@@ -147,7 +133,7 @@ public class Map {
                     int weather = value / 100;
                     boolean flooded = ((value % 100) / 10) == 1;
                     int depth = value % 10;
-                    tiles[j][i] = new Tile(Weather.findByValue(weather), depth, flooded);
+                    tiles[j][i] = new Tile(j, i, Weather.findByValue(weather), depth, flooded);
                 }
             }
         }
@@ -156,15 +142,6 @@ public class Map {
 
         image = new Image(getWidth() * TILE_SIZE, getHeight() * TILE_SIZE + (TILESHEET.getImage().getHeight() - TILE_SIZE));
         graphics = image.getGraphics();
-
-        flowers = new ArrayList<>();
-        for (int i = 0; i < getWidth(); i++) {
-            for (int j = 0; j < getHeight(); j++) {
-                if (NumberGenerator.get().randomDouble() > .8f) {
-                    flowers.add(new Flower(i, j));
-                }
-            }
-        }
     }
 
     public int getWidth() {
@@ -271,24 +248,7 @@ public class Map {
             for (int j = 0; j < getHeight(); j++) {
                 Tile tile = getTile(i, j);
                 if (tile != null) {
-                    int frame = tile.getDepth();
-                    if (tile.isFlooded()) {
-                        frame -= 1;
-                    }
-
-                    graphics.drawImage(TILESHEET.getImage(), i * TILE_SIZE, j * TILE_SIZE, (i + 1) * TILE_SIZE,
-                            j * TILE_SIZE + TILESHEET.getImage().getHeight(), frame * TILE_SIZE, 0, (frame + 1) * TILE_SIZE,
-                            TILESHEET.getImage().getHeight());
-
-                    int tempI = i;
-                    int tempJ = j;
-                    Optional<Flower> flower = flowers.stream().filter(f -> f.isAtPosition(tempI, tempJ)).findAny();
-
-                    if (tile.isFlooded()) {
-                        graphics.drawImage(WATER.getImage(), i * TILE_SIZE, (j + 1) * TILE_SIZE - frame * 8);
-                    } else if (flower.isPresent()) {
-                        flower.get().draw(graphics, frame);
-                    }
+                    tile.draw(graphics);
 
                     if (player.isAtPosition(i, j)) {
                         player.draw(graphics);

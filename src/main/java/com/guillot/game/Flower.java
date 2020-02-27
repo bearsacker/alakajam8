@@ -13,9 +13,9 @@ public class Flower {
 
     private int frame;
 
-    public Flower(int x, int y) {
-        position = new Point(x, y);
-        frame = NumberGenerator.get().randomInt(4);
+    public Flower(Point position) {
+        this.position = position;
+        this.frame = NumberGenerator.get().randomInt(4);
     }
 
     public void draw(Graphics g, int depth) {
@@ -24,7 +24,4 @@ public class Flower {
         g.drawImage(FLOWERS.getImage(), x, y, x + TILE_SIZE, y + TILE_SIZE, frame * TILE_SIZE, 0, (frame + 1) * TILE_SIZE, TILE_SIZE);
     }
 
-    public boolean isAtPosition(int x, int y) {
-        return position.is(x, y);
-    }
 }

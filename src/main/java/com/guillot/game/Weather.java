@@ -2,7 +2,7 @@ package com.guillot.game;
 
 
 public enum Weather {
-    NORMAL(0), SNOW(1);
+    SUNNY(0), SNOW(1);
 
     private int value;
 
