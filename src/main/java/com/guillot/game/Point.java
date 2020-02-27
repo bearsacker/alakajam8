@@ -16,6 +16,15 @@ public class Point {
         this.y = y;
     }
 
+    public Point(Point point) {
+        this();
+
+        if (point != null) {
+            this.x = point.x;
+            this.y = point.y;
+        }
+    }
+
     public int getX() {
         return x;
     }
@@ -48,6 +57,22 @@ public class Point {
         }
 
         return 0;
+    }
+
+    public void incrementX() {
+        x++;
+    }
+
+    public void decrementX() {
+        x--;
+    }
+
+    public void incrementY() {
+        y++;
+    }
+
+    public void decrementY() {
+        y--;
     }
 
     @Override

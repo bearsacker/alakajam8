@@ -1,10 +1,10 @@
 package com.guillot.game;
 
+import static com.guillot.game.Colors.OVERLAY;
+import static com.guillot.game.Images.PORTRAIT;
 import static org.newdawn.slick.Input.KEY_SPACE;
 
-import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
 import org.newdawn.slick.Sound;
 
 import com.guillot.engine.configs.EngineConfig;
@@ -17,8 +17,6 @@ import com.guillot.engine.gui.Text;
 
 public class DefeatView extends SubView {
 
-    private final static Color OVERLAY = new Color(0f, 0f, 0f, .7f);
-
     private TimedRunView parent;
 
     private Button buttonRetry;
@@ -29,8 +27,6 @@ public class DefeatView extends SubView {
 
     private Sound sound;
 
-    private Image portrait;
-
     private int frame;
 
     public DefeatView(TimedRunView parent) throws Exception {
@@ -39,7 +35,6 @@ public class DefeatView extends SubView {
         this.parent = parent;
         text = new Text("", 144, EngineConfig.HEIGHT - 92);
 
-        portrait = new Image("sprites/portrait.png");
         frame = 0;
 
         buttonRetry = new Button("Retry", EngineConfig.WIDTH - 160, EngineConfig.HEIGHT - 112, 128, 32);
@@ -81,10 +76,11 @@ public class DefeatView extends SubView {
 
     @Override
     public void paint(Graphics g) {
-        g.setColor(OVERLAY);
+        g.setColor(OVERLAY.getColor());
         g.fillRect(x, EngineConfig.HEIGHT - 144, EngineConfig.WIDTH, 144);
 
-        g.drawImage(portrait, 24, EngineConfig.HEIGHT - 120, 120, EngineConfig.HEIGHT - 24, frame * 144, 0, (frame + 1) * 144, 144);
+        g.drawImage(PORTRAIT.getImage(), 24, EngineConfig.HEIGHT - 120, 120, EngineConfig.HEIGHT - 24, frame * 144, 0, (frame + 1) * 144,
+                144);
 
         super.paint(g);
     }

@@ -1,10 +1,10 @@
 package com.guillot.game;
 
+import static com.guillot.game.Colors.YELLOW;
+import static com.guillot.game.Images.LOGO;
 import static org.newdawn.slick.Input.KEY_SPACE;
 
-import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
 import com.guillot.engine.Game;
@@ -17,10 +17,6 @@ import com.guillot.engine.gui.Text;
 import com.guillot.engine.gui.View;
 
 public class MenuView extends View {
-
-    private final static Color YELLOW = new Color(1f, .9f, .2f);
-
-    private Image logo;
 
     private Button buttonRun;
 
@@ -63,13 +59,12 @@ public class MenuView extends View {
             }
         });
 
-        author = new Text("Bearsucker - 2020", 16, EngineConfig.HEIGHT - 24, YELLOW);
+        author = new Text("Bearsucker - 2020", 16, EngineConfig.HEIGHT - 24, YELLOW.getColor());
 
         add(buttonRun, buttonEndless, buttonQuit, author);
 
         map = new Map(getWidth(), getHeight());
         map.setPlayerCanMove(false);
-        logo = new Image("sprites/logo.png");
     }
 
     @Override
@@ -92,7 +87,7 @@ public class MenuView extends View {
     @Override
     public void paintComponents(Graphics g) throws Exception {
         map.draw(g, 0, -Map.TILE_SIZE);
-        g.drawImage(logo, EngineConfig.WIDTH / 2 - logo.getWidth() / 2, 80);
+        g.drawImage(LOGO.getImage(), EngineConfig.WIDTH / 2 - LOGO.getImage().getWidth() / 2, 80);
 
         super.paintComponents(g);
     }

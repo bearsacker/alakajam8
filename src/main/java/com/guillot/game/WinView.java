@@ -1,8 +1,8 @@
 package com.guillot.game;
 
+import static com.guillot.game.Colors.OVERLAY;
 import static org.newdawn.slick.Input.KEY_SPACE;
 
-import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 
 import com.guillot.engine.configs.EngineConfig;
@@ -15,8 +15,6 @@ import com.guillot.engine.gui.Text;
 import com.guillot.engine.gui.View;
 
 public class WinView extends SubView {
-
-    private final static Color OVERLAY = new Color(0f, 0f, 0f, .7f);
 
     private Button buttonMenu;
 
@@ -56,7 +54,7 @@ public class WinView extends SubView {
 
     @Override
     public void paint(Graphics g) {
-        g.setColor(OVERLAY);
+        g.setColor(OVERLAY.getColor());
         g.fillRect(x, EngineConfig.HEIGHT - 160, EngineConfig.WIDTH, 160);
 
         super.paint(g);

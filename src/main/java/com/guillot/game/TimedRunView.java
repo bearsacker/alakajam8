@@ -1,11 +1,14 @@
 package com.guillot.game;
 
+import static com.guillot.game.Colors.BACKGROUND;
+import static com.guillot.game.Colors.OVERLAY;
+import static com.guillot.game.Colors.SENTENCE;
+import static com.guillot.game.Colors.YELLOW;
 import static org.newdawn.slick.Input.KEY_ENTER;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 
 import com.guillot.engine.configs.EngineConfig;
@@ -14,12 +17,6 @@ import com.guillot.engine.gui.Text;
 import com.guillot.engine.gui.View;
 
 public class TimedRunView extends View {
-
-    private final static Color OVERLAY = new Color(0f, 0f, 0f, .7f);
-
-    private final static Color BACKGROUND_COLOR = new Color(.4f, .6f, 1f);
-
-    private final static Color YELLOW = new Color(1f, .9f, .2f);
 
     private final static SimpleDateFormat TIMER_FORMAT = new SimpleDateFormat("mm:ss");
 
@@ -41,16 +38,16 @@ public class TimedRunView extends View {
 
     @Override
     public void start() throws Exception {
-        setBackgroundColor(BACKGROUND_COLOR);
+        setBackgroundColor(BACKGROUND.getColor());
 
         level = 1;
         time = System.currentTimeMillis();
         map = new Map("maps/" + level + ".map");
-        sentence = new Text(map.getSentence(), 64, 80, Color.white);
+        sentence = new Text(map.getSentence(), 64, 80, SENTENCE.getColor());
         sentence.setX(EngineConfig.WIDTH / 2 - sentence.getWidth() / 2);
 
-        levelText = new Text("Level " + level, 24, 14, YELLOW);
-        timerText = new Text("", 0, 14, YELLOW);
+        levelText = new Text("Level " + level, 24, 14, YELLOW.getColor());
+        timerText = new Text("", 0, 14, YELLOW.getColor());
 
         winView = new WinView(this);
         defeatView = new DefeatView(this);
@@ -103,7 +100,7 @@ public class TimedRunView extends View {
 
     @Override
     public void paintComponents(Graphics g) throws Exception {
-        g.setColor(OVERLAY);
+        g.setColor(OVERLAY.getColor());
         g.fillRect(0, 0, EngineConfig.WIDTH, 48);
 
         map.draw(g);

@@ -1,9 +1,12 @@
 package com.guillot.game;
 
+import static com.guillot.game.Colors.YELLOW;
 import static com.guillot.game.Direction.BOTTOM;
 import static com.guillot.game.Direction.LEFT;
 import static com.guillot.game.Direction.RIGHT;
 import static com.guillot.game.Direction.TOP;
+import static com.guillot.game.Images.PLAYER;
+import static com.guillot.game.Map.TILE_SIZE;
 import static org.newdawn.slick.Input.KEY_A;
 import static org.newdawn.slick.Input.KEY_D;
 import static org.newdawn.slick.Input.KEY_DOWN;
@@ -16,9 +19,7 @@ import static org.newdawn.slick.Input.KEY_UP;
 import static org.newdawn.slick.Input.KEY_W;
 
 import org.apache.commons.math3.util.FastMath;
-import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
 import com.guillot.engine.gui.Controller;
@@ -27,15 +28,9 @@ import com.guillot.engine.gui.GUI;
 
 public class Player {
 
-    private final static Color YELLOW = new Color(1f, .9f, .2f);
+    private Point position;
 
-    private static final int TILE_SIZE = 32;
-
-    private int x;
-
-    private int y;
-
-    private Image image;
+    private Point cursorPosition;
 
     private Map map;
 
@@ -47,19 +42,33 @@ public class Player {
 
     private int animation;
 
-    public Player(Map map, int x, int y) throws SlickException {
+    public Player(Map map) throws SlickException {
         this.map = map;
-        this.x = x;
-        this.y = y;
+        this.position = new Point();
+        this.cursorPosition = new Point();
         this.holding = false;
         this.direction = BOTTOM;
-
-        this.image = new Image("sprites/player.png");
         this.animation = 0;
         this.lastAnimation = System.currentTimeMillis();
     }
 
     public void update() {
+        cursorPosition = new Point(position);
+        switch (direction) {
+        case BOTTOM:
+            cursorPosition.incrementY();
+            break;
+        case LEFT:
+            cursorPosition.decrementX();
+            break;
+        case RIGHT:
+            cursorPosition.incrementX();
+            break;
+        case TOP:
+            cursorPosition.decrementY();
+            break;
+        }
+
         long time = System.currentTimeMillis();
         if (time - lastAnimation > 250) {
             animation++;
@@ -70,58 +79,40 @@ public class Player {
         if (GUI.get().isKeyPressed(KEY_LEFT) || GUI.get().isKeyPressed(KEY_A) || Controller.get().isLeftPressed()) {
             if (direction != LEFT) {
                 direction = LEFT;
-            } else if (map.canWalkLeft(x, y)) {
-                x--;
+            } else if (canWalkLeft()) {
+                position.decrementX();
             }
         }
 
         if (GUI.get().isKeyPressed(KEY_RIGHT) || GUI.get().isKeyPressed(KEY_D) || Controller.get().isRightPressed()) {
             if (direction != RIGHT) {
                 direction = RIGHT;
-            } else if (map.canWalkRight(x, y)) {
-                x++;
+            } else if (canWalkRight()) {
+                position.incrementX();
             }
         }
 
         if (GUI.get().isKeyPressed(KEY_UP) || GUI.get().isKeyPressed(KEY_W) || Controller.get().isUpPressed()) {
             if (direction != TOP) {
                 direction = TOP;
-            } else if (map.canWalkTop(x, y)) {
-                y--;
+            } else if (canWalkTop()) {
+                position.decrementY();
             }
         }
 
         if (GUI.get().isKeyPressed(KEY_DOWN) || GUI.get().isKeyPressed(KEY_S) || Controller.get().isDownPressed()) {
             if (direction != BOTTOM) {
                 direction = BOTTOM;
-            } else if (map.canWalkBottom(x, y)) {
-                y++;
+            } else if (canWalkBottom()) {
+                position.incrementY();
             }
         }
 
         if (GUI.get().isKeyPressed(KEY_E) || GUI.get().isKeyPressed(KEY_SPACE) || Controller.get().isButtonPressed()) {
-            int directionX = x;
-            int directionY = y;
-
-            switch (direction) {
-            case BOTTOM:
-                directionY++;
-                break;
-            case LEFT:
-                directionX--;
-                break;
-            case RIGHT:
-                directionX++;
-                break;
-            case TOP:
-                directionY--;
-                break;
-            }
-
-            if (holding && map.increaseDepth(x, y, directionX, directionY)) {
+            if (holding && map.increaseDepth(position.getX(), position.getY(), cursorPosition.getX(), cursorPosition.getY())) {
                 holding = !holding;
                 Sounds.DROP.getSound().play();
-            } else if (!holding && map.decreaseDepth(x, y, directionX, directionY)) {
+            } else if (!holding && map.decreaseDepth(position.getX(), position.getY(), cursorPosition.getX(), cursorPosition.getY())) {
                 holding = !holding;
                 Sounds.TAKE.getSound().play();
             }
@@ -134,69 +125,34 @@ public class Player {
             frame += 8;
         }
 
-        Integer depth = FastMath.max(0, map.getTile(x, y));
+        Integer depth = FastMath.max(0, getDepth());
 
-        g.drawImage(image, x * TILE_SIZE, y * TILE_SIZE + (5 - depth) * 8 - 8, x * TILE_SIZE + TILE_SIZE,
-                y * TILE_SIZE + (5 - depth) * 8 - 8 + TILE_SIZE, frame * TILE_SIZE, 0, (frame + 1) * TILE_SIZE, TILE_SIZE);
+        g.drawImage(PLAYER.getImage(), position.getX() * TILE_SIZE, position.getY() * TILE_SIZE + (5 - depth) * 8 - 8,
+                position.getX() * TILE_SIZE + TILE_SIZE,
+                position.getY() * TILE_SIZE + (5 - depth) * 8 - 8 + TILE_SIZE, frame * TILE_SIZE, 0, (frame + 1) * TILE_SIZE, TILE_SIZE);
     }
 
     public void drawCursor(Graphics g) {
-        int directionX = x;
-        int directionY = y;
-
-        switch (direction) {
-        case BOTTOM:
-            directionY++;
-            break;
-        case LEFT:
-            directionX--;
-            break;
-        case RIGHT:
-            directionX++;
-            break;
-        case TOP:
-            directionY--;
-            break;
-        }
-
-        Integer depth = map.getTile(directionX, directionY);
+        Integer depth = map.getTile(cursorPosition);
         if (depth != null) {
             depth = FastMath.abs(depth);
 
-            g.setColor(YELLOW);
-            g.drawRect(directionX * TILE_SIZE, directionY * TILE_SIZE + (5 - depth) * 8,
+            g.setColor(YELLOW.getColor());
+            g.drawRect(cursorPosition.getX() * TILE_SIZE, cursorPosition.getY() * TILE_SIZE + (5 - depth) * 8,
                     TILE_SIZE - 1, TILE_SIZE - 1);
         }
     }
 
     public boolean isAtPosition(int x, int y) {
-        return this.x == x && this.y == y;
+        return position.is(x, y);
     }
 
     public boolean isLookingAtPosition(int x, int y) {
-        int directionX = this.x;
-        int directionY = this.y;
-
-        switch (direction) {
-        case BOTTOM:
-            directionY++;
-            break;
-        case LEFT:
-            directionX--;
-            break;
-        case RIGHT:
-            directionX++;
-            break;
-        case TOP:
-            directionY--;
-            break;
-        }
-
-        return directionX == x && directionY == y;
+        return cursorPosition.is(x, y);
     }
 
     public boolean isBlocked() {
-        return !map.canWalkTop(x, y) && !map.canWalkBottom(x, y) && !map.canWalkLeft(x, y) && !map.canWalkRight(x, y);
+        return !canWalkTop() && !canWalkBottom() && !canWalkLeft() && !canWalkRight();
     }
 
     public boolean isDrowned() {
@@ -204,18 +160,62 @@ public class Player {
     }
 
     public Integer getDepth() {
-        return map.getTile(x, y);
+        return map.getTile(position);
     }
 
     public boolean isHolding() {
         return holding;
     }
 
+    public int getX() {
+        return position.getX();
+    }
+
     public void setX(int x) {
-        this.x = x;
+        position.setX(x);
+    }
+
+    public int getY() {
+        return position.getY();
     }
 
     public void setY(int y) {
-        this.y = y;
+        position.setY(y);
+    }
+
+    public boolean canWalkLeft() {
+        Integer destinationDepth = map.getTile(position.getX() - 1, position.getY());
+        if (destinationDepth == null) {
+            return false;
+        }
+
+        return (destinationDepth - getDepth()) <= 1;
+    }
+
+    public boolean canWalkRight() {
+        Integer destinationDepth = map.getTile(position.getX() + 1, position.getY());
+        if (destinationDepth == null) {
+            return false;
+        }
+
+        return (destinationDepth - getDepth()) <= 1;
+    }
+
+    public boolean canWalkTop() {
+        Integer destinationDepth = map.getTile(position.getX(), position.getY() - 1);
+        if (destinationDepth == null) {
+            return false;
+        }
+
+        return (destinationDepth - getDepth()) <= 1;
+    }
+
+    public boolean canWalkBottom() {
+        Integer destinationDepth = map.getTile(position.getX(), position.getY() + 1);
+        if (destinationDepth == null) {
+            return false;
+        }
+
+        return (destinationDepth - getDepth()) <= 1;
     }
 }

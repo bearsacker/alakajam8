@@ -1,11 +1,14 @@
 package com.guillot.game;
 
+import static com.guillot.game.Images.TILESHEET;
+import static com.guillot.game.Images.WATER;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.math3.util.FastMath;
@@ -20,12 +23,6 @@ import com.guillot.engine.utils.NumberGenerator;
 public class Map {
 
     public final static int TILE_SIZE = 32;
-
-    private Image tileSheet;
-
-    private Image water;
-
-    private Image flowers;
 
     private Integer[][] tiles;
 
@@ -43,15 +40,12 @@ public class Map {
 
     private int animationDepth;
 
-    private List<Point> flowersPositions;
+    private ArrayList<Flower> flowers;
 
     private boolean playerCanMove;
 
     public Map() throws SlickException {
-        tileSheet = new Image("sprites/tilesheet.png");
-        water = new Image("sprites/water.png");
-        flowers = new Image("sprites/flowers.png");
-        player = new Player(this, 0, 0);
+        player = new Player(this);
         animation = -1;
         playerCanMove = true;
     }
@@ -116,14 +110,14 @@ public class Map {
             }
         }
 
-        image = new Image(width * TILE_SIZE, height * TILE_SIZE + (tileSheet.getHeight() - TILE_SIZE));
+        image = new Image(width * TILE_SIZE, height * TILE_SIZE + (TILESHEET.getImage().getHeight() - TILE_SIZE));
         graphics = image.getGraphics();
 
-        flowersPositions = new ArrayList<>();
+        flowers = new ArrayList<>();
         for (int i = 0; i < getWidth(); i++) {
             for (int j = 0; j < getHeight(); j++) {
                 if (NumberGenerator.get().randomDouble() > .8f) {
-                    flowersPositions.add(new Point(i, j));
+                    flowers.add(new Flower(i, j));
                 }
             }
         }
@@ -155,14 +149,14 @@ public class Map {
 
         sentence = lines.get(0);
 
-        image = new Image(getWidth() * TILE_SIZE, getHeight() * TILE_SIZE + (tileSheet.getHeight() - TILE_SIZE));
+        image = new Image(getWidth() * TILE_SIZE, getHeight() * TILE_SIZE + (TILESHEET.getImage().getHeight() - TILE_SIZE));
         graphics = image.getGraphics();
 
-        flowersPositions = new ArrayList<>();
+        flowers = new ArrayList<>();
         for (int i = 0; i < getWidth(); i++) {
             for (int j = 0; j < getHeight(); j++) {
                 if (NumberGenerator.get().randomDouble() > .8f) {
-                    flowersPositions.add(new Point(i, j));
+                    flowers.add(new Flower(i, j));
                 }
             }
         }
@@ -289,18 +283,18 @@ public class Map {
                         frame = FastMath.abs(frame) - 1;
                     }
 
-                    graphics.drawImage(tileSheet, i * TILE_SIZE, j * TILE_SIZE, (i + 1) * TILE_SIZE,
-                            j * TILE_SIZE + tileSheet.getHeight(), frame * TILE_SIZE, 0, (frame + 1) * TILE_SIZE,
-                            tileSheet.getHeight());
+                    graphics.drawImage(TILESHEET.getImage(), i * TILE_SIZE, j * TILE_SIZE, (i + 1) * TILE_SIZE,
+                            j * TILE_SIZE + TILESHEET.getImage().getHeight(), frame * TILE_SIZE, 0, (frame + 1) * TILE_SIZE,
+                            TILESHEET.getImage().getHeight());
+
+                    int tempI = i;
+                    int tempJ = j;
+                    Optional<Flower> flower = flowers.stream().filter(f -> f.isAtPosition(tempI, tempJ)).findAny();
 
                     if (isWater) {
-                        graphics.drawImage(water, i * TILE_SIZE, (j + 1) * TILE_SIZE - frame * 8);
-                    } else if (flowersPositions.contains(new Point(i, j))) {
-                        int flowerFrame = (i + j) % 3;
-
-                        graphics.drawImage(flowers, i * TILE_SIZE, j * TILE_SIZE + (5 - frame) * 8, (i + 1) * TILE_SIZE,
-                                (j + 1) * TILE_SIZE + (5 - frame) * 8, flowerFrame * TILE_SIZE, 0, (flowerFrame + 1) * TILE_SIZE,
-                                TILE_SIZE);
+                        graphics.drawImage(WATER.getImage(), i * TILE_SIZE, (j + 1) * TILE_SIZE - frame * 8);
+                    } else if (flower.isPresent()) {
+                        flower.get().draw(graphics, frame);
                     }
 
                     if (player.isAtPosition(i, j)) {
@@ -320,68 +314,20 @@ public class Map {
                 EngineConfig.HEIGHT / 2 - image.getCenterOfRotationY() + TILE_SIZE);
     }
 
-    public boolean canWalkLeft(int x, int y) {
-        if (x == 0) {
-            return false;
-        }
-
-        Integer destination = getTile(x - 1, y);
-        if (destination == null) {
-            return false;
-        }
-
-        int difference = destination - tiles[x][y];
-        return difference <= 1;
-    }
-
-    public boolean canWalkRight(int x, int y) {
-        if (x == getWidth() - 1) {
-            return false;
-        }
-
-        Integer destination = getTile(x + 1, y);
-        if (destination == null) {
-            return false;
-        }
-
-        int difference = destination - tiles[x][y];
-        return difference <= 1;
-    }
-
-    public boolean canWalkTop(int x, int y) {
-        if (y == 0) {
-            return false;
-        }
-
-        Integer destination = getTile(x, y - 1);
-        if (destination == null) {
-            return false;
-        }
-
-        int difference = destination - tiles[x][y];
-        return difference <= 1;
-    }
-
-    public boolean canWalkBottom(int x, int y) {
-        if (y == getHeight() - 1) {
-            return false;
-        }
-
-        Integer destination = getTile(x, y + 1);
-        if (destination == null) {
-            return false;
-        }
-
-        int difference = destination - tiles[x][y];
-        return difference <= 1;
-    }
-
     public void setTile(int x, int y, int depth) {
         if (x < 0 || y < 0 || x >= getWidth() || y >= getHeight()) {
             return;
         }
 
         tiles[x][y] = depth;
+    }
+
+    public Integer getTile(Point position) {
+        if (position == null) {
+            return null;
+        }
+
+        return getTile(position.getX(), position.getY());
     }
 
     public Integer getTile(int x, int y) {
