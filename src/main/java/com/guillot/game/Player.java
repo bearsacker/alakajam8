@@ -125,7 +125,7 @@ public class Player {
             frame += 8;
         }
 
-        Integer depth = FastMath.max(0, getDepth());
+        Integer depth = FastMath.max(0, getHeight());
 
         g.drawImage(PLAYER.getImage(), position.getX() * TILE_SIZE, position.getY() * TILE_SIZE + (5 - depth) * 8 - 8,
                 position.getX() * TILE_SIZE + TILE_SIZE,
@@ -136,7 +136,7 @@ public class Player {
         Tile tile = map.getTile(cursorPosition);
         if (tile != null) {
             g.setColor(YELLOW.getColor());
-            g.drawRect(cursorPosition.getX() * TILE_SIZE, cursorPosition.getY() * TILE_SIZE + (5 - tile.getDepth()) * 8,
+            g.drawRect(cursorPosition.getX() * TILE_SIZE, cursorPosition.getY() * TILE_SIZE + (5 - tile.getHeight()) * 8,
                     TILE_SIZE - 1, TILE_SIZE - 1);
         }
     }
@@ -157,8 +157,8 @@ public class Player {
         return map.getTile(position).isFlooded();
     }
 
-    public Integer getDepth() {
-        return map.getTile(position).getDepth();
+    public Integer getHeight() {
+        return map.getTile(position).getHeight();
     }
 
     public boolean isHolding() {
@@ -187,7 +187,7 @@ public class Player {
             return false;
         }
 
-        return (destinationTile.getDepth() - getDepth()) <= 1;
+        return (destinationTile.getHeight() - getHeight()) <= 1;
     }
 
     public boolean canWalkRight() {
@@ -196,7 +196,7 @@ public class Player {
             return false;
         }
 
-        return (destinationTile.getDepth() - getDepth()) <= 1;
+        return (destinationTile.getHeight() - getHeight()) <= 1;
     }
 
     public boolean canWalkTop() {
@@ -205,7 +205,7 @@ public class Player {
             return false;
         }
 
-        return (destinationTile.getDepth() - getDepth()) <= 1;
+        return (destinationTile.getHeight() - getHeight()) <= 1;
     }
 
     public boolean canWalkBottom() {
@@ -214,6 +214,6 @@ public class Player {
             return false;
         }
 
-        return (destinationTile.getDepth() - getDepth()) <= 1;
+        return (destinationTile.getHeight() - getHeight()) <= 1;
     }
 }

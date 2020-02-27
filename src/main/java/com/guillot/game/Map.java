@@ -34,8 +34,6 @@ public class Map {
 
     private long lastAnimationTime;
 
-    private int animationDepth;
-
     private boolean playerCanMove;
 
     public Map() throws SlickException {
@@ -60,37 +58,43 @@ public class Map {
             int y = NumberGenerator.get().randomInt(getWidth());
             int depth = NumberGenerator.get().randomInt(2, 5);
 
-            setTile(x, y, depth);
+            getTile(x, y).setHeight(depth);
             double type = NumberGenerator.get().randomDouble();
 
             if (type < .25f) {
-                setTile(x + 1, y, depth);
-                setTile(x + 1, y - 1, depth);
-                setTile(x, y - 1, depth);
-            } else if (type < .4f) {
-                setTile(x + 1, y, depth);
-            } else if (type < .55f) {
-                setTile(x, y + 1, depth);
+                if (getTile(x + 1, y) != null) {
+                    getTile(x + 1, y).setHeight(depth);
+                }
+                if (getTile(x + 1, y - 1) != null) {
+                    getTile(x + 1, y - 1).setHeight(depth);
+                }
+                if (getTile(x, y - 1) != null) {
+                    getTile(x, y - 1).setHeight(depth);
+                }
+            } else if (type < .4f && getTile(x + 1, y) != null) {
+                getTile(x + 1, y).setHeight(depth);
+            } else if (type < .55f && getTile(x, y + 1) != null) {
+                getTile(x, y + 1).setHeight(depth);
             }
         }
 
         for (int k = 0; k < 5; k++) {
             for (int i = 0; i < getWidth(); i++) {
                 for (int j = 0; j < getHeight(); j++) {
-                    if (getTile(i - 1, j) != null && getTile(i - 1, j).getDepth() < getTile(i, j).getDepth() - 1) {
-                        setTile(i - 1, j, getTile(i, j).getDepth() - 1);
+                    if (getTile(i - 1, j) != null && getTile(i - 1, j).getHeight() < getTile(i, j).getHeight() - 1) {
+                        getTile(i - 1, j).setHeight(getTile(i, j).getHeight() - 1);
                     }
 
-                    if (getTile(i + 1, j) != null && getTile(i + 1, j).getDepth() < getTile(i, j).getDepth() - 1) {
-                        setTile(i + 1, j, getTile(i, j).getDepth() - 1);
+                    if (getTile(i + 1, j) != null && getTile(i + 1, j).getHeight() < getTile(i, j).getHeight() - 1) {
+                        getTile(i + 1, j).setHeight(getTile(i, j).getHeight() - 1);
                     }
 
-                    if (getTile(i, j - 1) != null && getTile(i, j - 1).getDepth() < getTile(i, j).getDepth() - 1) {
-                        setTile(i, j - 1, getTile(i, j).getDepth() - 1);
+                    if (getTile(i, j - 1) != null && getTile(i, j - 1).getHeight() < getTile(i, j).getHeight() - 1) {
+                        getTile(i, j - 1).setHeight(getTile(i, j).getHeight() - 1);
                     }
 
-                    if (getTile(i, j + 1) != null && getTile(i, j + 1).getDepth() < getTile(i, j).getDepth() - 1) {
-                        setTile(i, j + 1, getTile(i, j).getDepth() - 1);
+                    if (getTile(i, j + 1) != null && getTile(i, j + 1).getHeight() < getTile(i, j).getHeight() - 1) {
+                        getTile(i, j + 1).setHeight(getTile(i, j).getHeight() - 1);
                     }
                 }
             }
@@ -98,9 +102,8 @@ public class Map {
 
         for (int i = 0; i < getWidth(); i++) {
             for (int j = 0; j < getHeight(); j++) {
-                if (tiles[i][j].getDepth() == 0) {
-                    tiles[i][j].setDepth(1);
-                    tiles[i][j].setFlooded(true);
+                if (tiles[i][j].getHeight() == 0) {
+                    tiles[i][j].setWaterHeight(1);
                 }
             }
         }
@@ -131,9 +134,9 @@ public class Map {
                     int value = Integer.parseInt(depths[j]);
 
                     int weather = value / 100;
-                    boolean flooded = ((value % 100) / 10) == 1;
-                    int depth = value % 10;
-                    tiles[j][i] = new Tile(j, i, Weather.findByValue(weather), depth, flooded);
+                    int waterHeight = (value % 100) / 10;
+                    int height = value % 10;
+                    tiles[j][i] = new Tile(j, i, Weather.findByValue(weather), height, waterHeight);
                 }
             }
         }
@@ -157,11 +160,11 @@ public class Map {
             return false;
         }
 
-        Integer value = getTile(0, 0).getDepth();
+        Integer value = getTile(0, 0).getHeight();
 
         for (int i = 0; i < getWidth(); i++) {
             for (int j = 0; j < getHeight(); j++) {
-                if (getTile(i, j) != null && getTile(i, j).getDepth() != value) {
+                if (getTile(i, j) != null && getTile(i, j).getHeight() != value) {
                     return false;
                 }
             }
@@ -175,32 +178,31 @@ public class Map {
             long currentTime = System.currentTimeMillis();
 
             if (currentTime - lastAnimationTime > 75) {
-                for (int i = 0; i < getWidth(); i++) {
-                    for (int j = 0; j < getHeight(); j++) {
-                        if (getTile(i, j) != null) {
-                            setTile(i, j, animationDepth);
-                        }
-                    }
-                }
-
                 for (int i = animation; i >= 0; i--) {
                     Tile depth = getTile(i, animation - i);
                     if (depth != null) {
-                        setTile(i, animation - i, animationDepth + 1);
+                        depth.increaseHeight(false);
                     }
                 }
 
                 for (int i = animation + 1; i >= 0; i--) {
                     Tile depth = getTile(i, animation - 1 - i);
                     if (depth != null) {
-                        setTile(i, animation - 1 - i, animationDepth + 2);
+                        depth.increaseHeight(false);
                     }
                 }
 
                 for (int i = animation + 2; i >= 0; i--) {
                     Tile depth = getTile(i, animation - 2 - i);
                     if (depth != null) {
-                        setTile(i, animation - 2 - i, animationDepth + 1);
+                        depth.decreaseHeight(false);
+                    }
+                }
+
+                for (int i = animation + 3; i >= 0; i--) {
+                    Tile depth = getTile(i, animation - 3 - i);
+                    if (depth != null) {
+                        depth.decreaseHeight(false);
                     }
                 }
 
@@ -216,24 +218,20 @@ public class Map {
                 for (int j = 0; j < getHeight(); j++) {
                     Tile tile = getTile(i, j);
                     if (tile != null && tile.isFlooded()) {
-                        if (getTile(i - 1, j) != null && getTile(i - 1, j).getDepth() < tile.getDepth()) {
-                            getTile(i - 1, j).setDepth(tile.getDepth());
-                            getTile(i - 1, j).setFlooded(true);
+                        if (getTile(i - 1, j) != null && getTile(i - 1, j).getHeight() < tile.getHeight()) {
+                            getTile(i - 1, j).setWaterHeight(tile.getHeight() - getTile(i - 1, j).getHeight());
                         }
 
-                        if (getTile(i + 1, j) != null && getTile(i + 1, j).getDepth() < tile.getDepth()) {
-                            getTile(i + 1, j).setDepth(tile.getDepth());
-                            getTile(i + 1, j).setFlooded(true);
+                        if (getTile(i + 1, j) != null && getTile(i + 1, j).getHeight() < tile.getHeight()) {
+                            getTile(i + 1, j).setWaterHeight(tile.getHeight() - getTile(i + 1, j).getHeight());
                         }
 
-                        if (getTile(i, j - 1) != null && getTile(i, j - 1).getDepth() < tile.getDepth()) {
-                            getTile(i, j - 1).setDepth(tile.getDepth());
-                            getTile(i, j - 1).setFlooded(true);
+                        if (getTile(i, j - 1) != null && getTile(i, j - 1).getHeight() < tile.getHeight()) {
+                            getTile(i, j - 1).setWaterHeight(tile.getHeight() - getTile(i, j - 1).getHeight());
                         }
 
-                        if (getTile(i, j + 1) != null && getTile(i, j + 1).getDepth() < tile.getDepth()) {
-                            getTile(i, j + 1).setDepth(tile.getDepth());
-                            getTile(i, j + 1).setFlooded(true);
+                        if (getTile(i, j + 1) != null && getTile(i, j + 1).getHeight() < tile.getHeight()) {
+                            getTile(i, j + 1).setWaterHeight(tile.getHeight() - getTile(i, j + 1).getHeight());
                         }
                     }
                 }
@@ -267,14 +265,6 @@ public class Map {
                 EngineConfig.HEIGHT / 2 - image.getCenterOfRotationY() + TILE_SIZE);
     }
 
-    public void setTile(int x, int y, int depth) {
-        if (x < 0 || y < 0 || x >= getWidth() || y >= getHeight()) {
-            return;
-        }
-
-        tiles[x][y].setDepth(depth);
-    }
-
     public Tile getTile(Point position) {
         if (position == null) {
             return null;
@@ -294,14 +284,8 @@ public class Map {
     public boolean increaseDepth(int x, int y, int targetX, int targetY) {
         Tile target = getTile(targetX, targetY);
         if (target != null) {
-            int difference = target.getDepth() - tiles[x][y].getDepth();
-
-            if (difference <= 0) {
-                if (tiles[targetX][targetY].isFlooded()) {
-                    tiles[targetX][targetY].setFlooded(false);
-                } else {
-                    tiles[targetX][targetY].increaseDepth();
-                }
+            if (target.getHeight() - tiles[x][y].getHeight() <= 0) {
+                target.increaseHeight(true);
 
                 return true;
             }
@@ -313,10 +297,8 @@ public class Map {
     public boolean decreaseDepth(int x, int y, int targetX, int targetY) {
         Tile target = getTile(targetX, targetY);
         if (target != null) {
-            int difference = target.getDepth() - tiles[x][y].getDepth();
-
-            if (difference == 1) {
-                tiles[targetX][targetY].decreaseDepth();
+            if (target.getHeight() - tiles[x][y].getHeight() == 1) {
+                target.decreaseHeight(true);
                 return true;
             }
         }
@@ -331,7 +313,6 @@ public class Map {
     public void launchAnimation() {
         animation = 0;
         lastAnimationTime = System.currentTimeMillis();
-        animationDepth = getTile(0, 0).getDepth();
     }
 
     public boolean isAnimationEnded() {
