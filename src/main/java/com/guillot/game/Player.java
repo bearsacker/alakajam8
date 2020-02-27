@@ -133,12 +133,10 @@ public class Player {
     }
 
     public void drawCursor(Graphics g) {
-        Integer depth = map.getTile(cursorPosition);
-        if (depth != null) {
-            depth = FastMath.abs(depth);
-
+        Tile tile = map.getTile(cursorPosition);
+        if (tile != null) {
             g.setColor(YELLOW.getColor());
-            g.drawRect(cursorPosition.getX() * TILE_SIZE, cursorPosition.getY() * TILE_SIZE + (5 - depth) * 8,
+            g.drawRect(cursorPosition.getX() * TILE_SIZE, cursorPosition.getY() * TILE_SIZE + (5 - tile.getDepth()) * 8,
                     TILE_SIZE - 1, TILE_SIZE - 1);
         }
     }
@@ -156,11 +154,11 @@ public class Player {
     }
 
     public boolean isDrowned() {
-        return getDepth() < 0;
+        return map.getTile(position).isFlooded();
     }
 
     public Integer getDepth() {
-        return map.getTile(position);
+        return map.getTile(position).getDepth();
     }
 
     public boolean isHolding() {
@@ -184,38 +182,38 @@ public class Player {
     }
 
     public boolean canWalkLeft() {
-        Integer destinationDepth = map.getTile(position.getX() - 1, position.getY());
-        if (destinationDepth == null) {
+        Tile destinationTile = map.getTile(position.getX() - 1, position.getY());
+        if (destinationTile == null) {
             return false;
         }
 
-        return (destinationDepth - getDepth()) <= 1;
+        return (destinationTile.getDepth() - getDepth()) <= 1;
     }
 
     public boolean canWalkRight() {
-        Integer destinationDepth = map.getTile(position.getX() + 1, position.getY());
-        if (destinationDepth == null) {
+        Tile destinationTile = map.getTile(position.getX() + 1, position.getY());
+        if (destinationTile == null) {
             return false;
         }
 
-        return (destinationDepth - getDepth()) <= 1;
+        return (destinationTile.getDepth() - getDepth()) <= 1;
     }
 
     public boolean canWalkTop() {
-        Integer destinationDepth = map.getTile(position.getX(), position.getY() - 1);
-        if (destinationDepth == null) {
+        Tile destinationTile = map.getTile(position.getX(), position.getY() - 1);
+        if (destinationTile == null) {
             return false;
         }
 
-        return (destinationDepth - getDepth()) <= 1;
+        return (destinationTile.getDepth() - getDepth()) <= 1;
     }
 
     public boolean canWalkBottom() {
-        Integer destinationDepth = map.getTile(position.getX(), position.getY() + 1);
-        if (destinationDepth == null) {
+        Tile destinationTile = map.getTile(position.getX(), position.getY() + 1);
+        if (destinationTile == null) {
             return false;
         }
 
-        return (destinationDepth - getDepth()) <= 1;
+        return (destinationTile.getDepth() - getDepth()) <= 1;
     }
 }

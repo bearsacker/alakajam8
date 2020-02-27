@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.math3.util.FastMath;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
@@ -24,7 +23,7 @@ public class Map {
 
     public final static int TILE_SIZE = 32;
 
-    private Integer[][] tiles;
+    private Tile[][] tiles;
 
     private Player player;
 
@@ -53,10 +52,10 @@ public class Map {
     public Map(int width, int height) throws SlickException {
         this();
 
-        tiles = new Integer[width][height];
+        tiles = new Tile[width][height];
         for (int i = 0; i < getWidth(); i++) {
             for (int j = 0; j < getHeight(); j++) {
-                tiles[i][j] = 0;
+                tiles[i][j] = new Tile(0);
             }
         }
 
@@ -83,20 +82,20 @@ public class Map {
         for (int k = 0; k < 5; k++) {
             for (int i = 0; i < getWidth(); i++) {
                 for (int j = 0; j < getHeight(); j++) {
-                    if (getTile(i - 1, j) != null && getTile(i - 1, j) < getTile(i, j) - 1) {
-                        setTile(i - 1, j, getTile(i, j) - 1);
+                    if (getTile(i - 1, j) != null && getTile(i - 1, j).getDepth() < getTile(i, j).getDepth() - 1) {
+                        setTile(i - 1, j, getTile(i, j).getDepth() - 1);
                     }
 
-                    if (getTile(i + 1, j) != null && getTile(i + 1, j) < getTile(i, j) - 1) {
-                        setTile(i + 1, j, getTile(i, j) - 1);
+                    if (getTile(i + 1, j) != null && getTile(i + 1, j).getDepth() < getTile(i, j).getDepth() - 1) {
+                        setTile(i + 1, j, getTile(i, j).getDepth() - 1);
                     }
 
-                    if (getTile(i, j - 1) != null && getTile(i, j - 1) < getTile(i, j) - 1) {
-                        setTile(i, j - 1, getTile(i, j) - 1);
+                    if (getTile(i, j - 1) != null && getTile(i, j - 1).getDepth() < getTile(i, j).getDepth() - 1) {
+                        setTile(i, j - 1, getTile(i, j).getDepth() - 1);
                     }
 
-                    if (getTile(i, j + 1) != null && getTile(i, j + 1) < getTile(i, j) - 1) {
-                        setTile(i, j + 1, getTile(i, j) - 1);
+                    if (getTile(i, j + 1) != null && getTile(i, j + 1).getDepth() < getTile(i, j).getDepth() - 1) {
+                        setTile(i, j + 1, getTile(i, j).getDepth() - 1);
                     }
                 }
             }
@@ -104,8 +103,9 @@ public class Map {
 
         for (int i = 0; i < getWidth(); i++) {
             for (int j = 0; j < getHeight(); j++) {
-                if (tiles[i][j] == 0) {
-                    tiles[i][j] = -1;
+                if (tiles[i][j].getDepth() == 0) {
+                    tiles[i][j].setDepth(1);
+                    tiles[i][j].setFlooded(true);
                 }
             }
         }
@@ -133,16 +133,21 @@ public class Map {
             String[] depths = lines.get(i + 1).split(";");
 
             if (tiles == null) {
-                tiles = new Integer[depths.length][];
+                tiles = new Tile[depths.length][];
 
                 for (int j = 0; j < depths.length; j++) {
-                    tiles[j] = new Integer[lines.size()];
+                    tiles[j] = new Tile[lines.size()];
                 }
             }
 
             for (int j = 0; j < depths.length; j++) {
-                if (!depths[j].equals(".")) {
-                    tiles[j][i] = Integer.parseInt(depths[j]);
+                if (!depths[j].equals("...")) {
+                    int value = Integer.parseInt(depths[j]);
+
+                    int weather = value / 100;
+                    boolean flooded = ((value % 100) / 10) == 1;
+                    int depth = value % 10;
+                    tiles[j][i] = new Tile(Weather.findByValue(weather), depth, flooded);
                 }
             }
         }
@@ -175,11 +180,11 @@ public class Map {
             return false;
         }
 
-        Integer value = FastMath.abs(getTile(0, 0));
+        Integer value = getTile(0, 0).getDepth();
 
         for (int i = 0; i < getWidth(); i++) {
             for (int j = 0; j < getHeight(); j++) {
-                if (getTile(i, j) != null && FastMath.abs(getTile(i, j)) != value) {
+                if (getTile(i, j) != null && getTile(i, j).getDepth() != value) {
                     return false;
                 }
             }
@@ -196,45 +201,29 @@ public class Map {
                 for (int i = 0; i < getWidth(); i++) {
                     for (int j = 0; j < getHeight(); j++) {
                         if (getTile(i, j) != null) {
-                            if (getTile(i, j) < 0) {
-                                setTile(i, j, -animationDepth);
-                            } else {
-                                setTile(i, j, animationDepth);
-                            }
+                            setTile(i, j, animationDepth);
                         }
                     }
                 }
 
                 for (int i = animation; i >= 0; i--) {
-                    Integer depth = getTile(i, animation - i);
+                    Tile depth = getTile(i, animation - i);
                     if (depth != null) {
-                        if (depth < 0) {
-                            setTile(i, animation - i, -(animationDepth + 1));
-                        } else {
-                            setTile(i, animation - i, animationDepth + 1);
-                        }
+                        setTile(i, animation - i, animationDepth + 1);
                     }
                 }
 
                 for (int i = animation + 1; i >= 0; i--) {
-                    Integer depth = getTile(i, animation - 1 - i);
+                    Tile depth = getTile(i, animation - 1 - i);
                     if (depth != null) {
-                        if (depth < 0) {
-                            setTile(i, animation - 1 - i, -(animationDepth + 2));
-                        } else {
-                            setTile(i, animation - 1 - i, animationDepth + 2);
-                        }
+                        setTile(i, animation - 1 - i, animationDepth + 2);
                     }
                 }
 
                 for (int i = animation + 2; i >= 0; i--) {
-                    Integer depth = getTile(i, animation - 2 - i);
+                    Tile depth = getTile(i, animation - 2 - i);
                     if (depth != null) {
-                        if (depth < 0) {
-                            setTile(i, animation - 2 - i, -(animationDepth + 1));
-                        } else {
-                            setTile(i, animation - 2 - i, animationDepth + 1);
-                        }
+                        setTile(i, animation - 2 - i, animationDepth + 1);
                     }
                 }
 
@@ -248,22 +237,26 @@ public class Map {
 
             for (int i = 0; i < getWidth(); i++) {
                 for (int j = 0; j < getHeight(); j++) {
-                    Integer depth = getTile(i, j);
-                    if (depth != null && depth < 0) {
-                        if (getTile(i - 1, j) != null && getTile(i - 1, j) < FastMath.abs(depth)) {
-                            setTile(i - 1, j, depth);
+                    Tile tile = getTile(i, j);
+                    if (tile != null && tile.isFlooded()) {
+                        if (getTile(i - 1, j) != null && getTile(i - 1, j).getDepth() < tile.getDepth()) {
+                            getTile(i - 1, j).setDepth(tile.getDepth());
+                            getTile(i - 1, j).setFlooded(true);
                         }
 
-                        if (getTile(i + 1, j) != null && getTile(i + 1, j) < FastMath.abs(depth)) {
-                            setTile(i + 1, j, depth);
+                        if (getTile(i + 1, j) != null && getTile(i + 1, j).getDepth() < tile.getDepth()) {
+                            getTile(i + 1, j).setDepth(tile.getDepth());
+                            getTile(i + 1, j).setFlooded(true);
                         }
 
-                        if (getTile(i, j - 1) != null && getTile(i, j - 1) < FastMath.abs(depth)) {
-                            setTile(i, j - 1, depth);
+                        if (getTile(i, j - 1) != null && getTile(i, j - 1).getDepth() < tile.getDepth()) {
+                            getTile(i, j - 1).setDepth(tile.getDepth());
+                            getTile(i, j - 1).setFlooded(true);
                         }
 
-                        if (getTile(i, j + 1) != null && getTile(i, j + 1) < FastMath.abs(depth)) {
-                            setTile(i, j + 1, depth);
+                        if (getTile(i, j + 1) != null && getTile(i, j + 1).getDepth() < tile.getDepth()) {
+                            getTile(i, j + 1).setDepth(tile.getDepth());
+                            getTile(i, j + 1).setFlooded(true);
                         }
                     }
                 }
@@ -276,11 +269,11 @@ public class Map {
 
         for (int i = 0; i < getWidth(); i++) {
             for (int j = 0; j < getHeight(); j++) {
-                Integer frame = getTile(i, j);
-                if (frame != null) {
-                    boolean isWater = frame < 0;
-                    if (isWater) {
-                        frame = FastMath.abs(frame) - 1;
+                Tile tile = getTile(i, j);
+                if (tile != null) {
+                    int frame = tile.getDepth();
+                    if (tile.isFlooded()) {
+                        frame -= 1;
                     }
 
                     graphics.drawImage(TILESHEET.getImage(), i * TILE_SIZE, j * TILE_SIZE, (i + 1) * TILE_SIZE,
@@ -291,7 +284,7 @@ public class Map {
                     int tempJ = j;
                     Optional<Flower> flower = flowers.stream().filter(f -> f.isAtPosition(tempI, tempJ)).findAny();
 
-                    if (isWater) {
+                    if (tile.isFlooded()) {
                         graphics.drawImage(WATER.getImage(), i * TILE_SIZE, (j + 1) * TILE_SIZE - frame * 8);
                     } else if (flower.isPresent()) {
                         flower.get().draw(graphics, frame);
@@ -319,10 +312,10 @@ public class Map {
             return;
         }
 
-        tiles[x][y] = depth;
+        tiles[x][y].setDepth(depth);
     }
 
-    public Integer getTile(Point position) {
+    public Tile getTile(Point position) {
         if (position == null) {
             return null;
         }
@@ -330,7 +323,7 @@ public class Map {
         return getTile(position.getX(), position.getY());
     }
 
-    public Integer getTile(int x, int y) {
+    public Tile getTile(int x, int y) {
         if (x < 0 || y < 0 || x >= getWidth() || y >= getHeight()) {
             return null;
         }
@@ -339,16 +332,15 @@ public class Map {
     }
 
     public boolean increaseDepth(int x, int y, int targetX, int targetY) {
-        Integer target = getTile(targetX, targetY);
+        Tile target = getTile(targetX, targetY);
         if (target != null) {
-            boolean isWater = target < 0;
-            int difference = FastMath.abs(target) - tiles[x][y];
+            int difference = target.getDepth() - tiles[x][y].getDepth();
 
-            if (tiles[targetX][targetY] < 5 && difference <= 0) {
-                if (isWater) {
-                    tiles[targetX][targetY] = FastMath.abs(target);
+            if (difference <= 0) {
+                if (tiles[targetX][targetY].isFlooded()) {
+                    tiles[targetX][targetY].setFlooded(false);
                 } else {
-                    tiles[targetX][targetY]++;
+                    tiles[targetX][targetY].increaseDepth();
                 }
 
                 return true;
@@ -359,12 +351,12 @@ public class Map {
     }
 
     public boolean decreaseDepth(int x, int y, int targetX, int targetY) {
-        Integer target = getTile(targetX, targetY);
+        Tile target = getTile(targetX, targetY);
         if (target != null) {
-            int difference = target - tiles[x][y];
+            int difference = target.getDepth() - tiles[x][y].getDepth();
 
-            if (tiles[targetX][targetY] > 0 && difference == 1) {
-                tiles[targetX][targetY]--;
+            if (difference == 1) {
+                tiles[targetX][targetY].decreaseDepth();
                 return true;
             }
         }
@@ -379,7 +371,7 @@ public class Map {
     public void launchAnimation() {
         animation = 0;
         lastAnimationTime = System.currentTimeMillis();
-        animationDepth = getTile(0, 0);
+        animationDepth = getTile(0, 0).getDepth();
     }
 
     public boolean isAnimationEnded() {
