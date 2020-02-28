@@ -19,4 +19,8 @@ public enum Weather {
 
         return null;
     }
+
+    public int getValue() {
+        return value;
+    }
 }

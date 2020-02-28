@@ -11,7 +11,7 @@ import com.guillot.engine.utils.NumberGenerator;
 
 public class Tile {
 
-    private final static int DEPTH_MAX = 5;
+    private final static int HEIGHT_MAX = 5;
 
     private Point position;
 
@@ -41,14 +41,16 @@ public class Tile {
     public void draw(Graphics g) {
         int x = position.getX() * TILE_SIZE;
         int y = position.getY() * TILE_SIZE;
-        g.drawImage(TILESHEET.getImage(), x, y, x + TILE_SIZE, y + TILESHEET.getImage().getHeight(), height * TILE_SIZE, 0,
-                (height + 1) * TILE_SIZE, TILESHEET.getImage().getHeight());
+        int w = weather.getValue() * (HEIGHT_MAX + 1) * TILE_SIZE;
+
+        g.drawImage(TILESHEET.getImage(), x, y, x + TILE_SIZE, y + TILESHEET.getImage().getHeight(), height * TILE_SIZE + w, 0,
+                (height + 1) * TILE_SIZE + w, TILESHEET.getImage().getHeight());
 
         if (isFlooded()) {
             for (int i = 0; i < waterHeight; i++) {
                 g.drawImage(WATER.getImage(), x, y + TILE_SIZE - (height + i) * 8);
             }
-        } else if (flower != null) {
+        } else if (SUNNY.equals(weather) && flower != null) {
             flower.draw(g, height);
         }
     }
@@ -86,7 +88,7 @@ public class Tile {
             waterHeight--;
         }
 
-        if (height < DEPTH_MAX) {
+        if (height < HEIGHT_MAX) {
             height++;
         }
     }
