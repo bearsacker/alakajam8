@@ -81,7 +81,7 @@ public class MenuView extends View {
 
     @Override
     public void paintComponents(Graphics g) throws Exception {
-        map.draw(g, 0, -Map.TILE_SIZE);
+        map.draw(g, 0, -Tile.SIZE);
         g.drawImage(LOGO.getImage(), EngineConfig.WIDTH / 2 - LOGO.getImage().getWidth() / 2, 80);
 
         super.paintComponents(g);
@@ -94,11 +94,11 @@ public class MenuView extends View {
     }
 
     public int getWidth() {
-        return EngineConfig.WIDTH / Map.TILE_SIZE;
+        return EngineConfig.WIDTH / Tile.SIZE;
     }
 
     public int getHeight() {
-        return EngineConfig.HEIGHT / Map.TILE_SIZE;
+        return EngineConfig.HEIGHT / Tile.SIZE;
     }
 
     public static void main(String[] args) throws SlickException {

@@ -2,7 +2,6 @@ package com.guillot.game;
 
 import static com.guillot.game.Images.TILESHEET;
 import static com.guillot.game.Images.WATER;
-import static com.guillot.game.Map.TILE_SIZE;
 import static com.guillot.game.Weather.SUNNY;
 
 import org.newdawn.slick.Graphics;
@@ -11,7 +10,11 @@ import com.guillot.engine.utils.NumberGenerator;
 
 public class Tile {
 
-    private final static int HEIGHT_MAX = 5;
+    public final static int SIZE = 32;
+
+    public final static int STEP_HEIGHT = 8;
+
+    public final static int HEIGHT_MAX = 5;
 
     private Point position;
 
@@ -39,16 +42,16 @@ public class Tile {
     }
 
     public void draw(Graphics g) {
-        int x = position.getX() * TILE_SIZE;
-        int y = position.getY() * TILE_SIZE;
-        int w = weather.getValue() * (HEIGHT_MAX + 1) * TILE_SIZE;
+        int x = position.getX() * SIZE;
+        int y = position.getY() * SIZE;
+        int w = weather.getValue() * (HEIGHT_MAX + 1) * SIZE;
 
-        g.drawImage(TILESHEET.getImage(), x, y, x + TILE_SIZE, y + TILESHEET.getImage().getHeight(), height * TILE_SIZE + w, 0,
-                (height + 1) * TILE_SIZE + w, TILESHEET.getImage().getHeight());
+        g.drawImage(TILESHEET.getImage(), x, y, x + SIZE, y + TILESHEET.getImage().getHeight(), height * SIZE + w, 0,
+                (height + 1) * SIZE + w, TILESHEET.getImage().getHeight());
 
         if (isFlooded()) {
             for (int i = 0; i < waterHeight; i++) {
-                g.drawImage(WATER.getImage(), x, y + TILE_SIZE - (height + i) * 8);
+                g.drawImage(WATER.getImage(), x, y + SIZE - (height + i) * STEP_HEIGHT);
             }
         } else if (SUNNY.equals(weather) && flower != null) {
             flower.draw(g, height);

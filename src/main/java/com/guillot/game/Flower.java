@@ -1,7 +1,9 @@
 package com.guillot.game;
 
 import static com.guillot.game.Images.FLOWERS;
-import static com.guillot.game.Map.TILE_SIZE;
+import static com.guillot.game.Tile.HEIGHT_MAX;
+import static com.guillot.game.Tile.SIZE;
+import static com.guillot.game.Tile.STEP_HEIGHT;
 
 import org.newdawn.slick.Graphics;
 
@@ -15,13 +17,13 @@ public class Flower {
 
     public Flower(Point position) {
         this.position = position;
-        this.frame = NumberGenerator.get().randomInt(4);
+        this.frame = NumberGenerator.get().randomInt(FLOWERS.getImage().getWidth() / SIZE);
     }
 
     public void draw(Graphics g, int depth) {
-        int x = position.getX() * TILE_SIZE;
-        int y = position.getY() * TILE_SIZE + (5 - depth) * 8;
-        g.drawImage(FLOWERS.getImage(), x, y, x + TILE_SIZE, y + TILE_SIZE, frame * TILE_SIZE, 0, (frame + 1) * TILE_SIZE, TILE_SIZE);
+        int x = position.getX() * SIZE;
+        int y = position.getY() * SIZE + (HEIGHT_MAX - depth) * STEP_HEIGHT;
+        g.drawImage(FLOWERS.getImage(), x, y, x + SIZE, y + SIZE, frame * SIZE, 0, (frame + 1) * SIZE, SIZE);
     }
 
 }

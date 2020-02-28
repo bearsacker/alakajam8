@@ -1,6 +1,7 @@
 package com.guillot.game;
 
 import static com.guillot.game.Images.TILESHEET;
+import static com.guillot.game.Tile.SIZE;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.BufferedReader;
@@ -17,8 +18,6 @@ import com.guillot.engine.utils.FileLoader;
 import com.guillot.engine.utils.NumberGenerator;
 
 public class Map {
-
-    public final static int TILE_SIZE = 32;
 
     private Tile[][] tiles;
 
@@ -105,7 +104,7 @@ public class Map {
             }
         }
 
-        image = new Image(width * TILE_SIZE, height * TILE_SIZE + (TILESHEET.getImage().getHeight() - TILE_SIZE));
+        image = new Image(width * SIZE, height * SIZE + (TILESHEET.getImage().getHeight() - SIZE));
         graphics = image.getGraphics();
     }
 
@@ -140,7 +139,7 @@ public class Map {
 
         sentence = lines.get(0);
 
-        image = new Image(getWidth() * TILE_SIZE, getHeight() * TILE_SIZE + (TILESHEET.getImage().getHeight() - TILE_SIZE));
+        image = new Image(getWidth() * SIZE, getHeight() * SIZE + (TILESHEET.getImage().getHeight() - SIZE));
         graphics = image.getGraphics();
     }
 
@@ -257,7 +256,7 @@ public class Map {
 
     public void draw(Graphics g) {
         draw(g, EngineConfig.WIDTH / 2 - image.getCenterOfRotationX(),
-                EngineConfig.HEIGHT / 2 - image.getCenterOfRotationY() + TILE_SIZE);
+                EngineConfig.HEIGHT / 2 - image.getCenterOfRotationY() + SIZE);
     }
 
     public Tile getTile(Point position) {

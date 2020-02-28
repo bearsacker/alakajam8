@@ -6,7 +6,9 @@ import static com.guillot.game.Direction.LEFT;
 import static com.guillot.game.Direction.RIGHT;
 import static com.guillot.game.Direction.TOP;
 import static com.guillot.game.Images.PLAYER;
-import static com.guillot.game.Map.TILE_SIZE;
+import static com.guillot.game.Tile.HEIGHT_MAX;
+import static com.guillot.game.Tile.SIZE;
+import static com.guillot.game.Tile.STEP_HEIGHT;
 import static org.newdawn.slick.Input.KEY_A;
 import static org.newdawn.slick.Input.KEY_D;
 import static org.newdawn.slick.Input.KEY_DOWN;
@@ -18,7 +20,6 @@ import static org.newdawn.slick.Input.KEY_SPACE;
 import static org.newdawn.slick.Input.KEY_UP;
 import static org.newdawn.slick.Input.KEY_W;
 
-import org.apache.commons.math3.util.FastMath;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 
@@ -125,19 +126,18 @@ public class Player {
             frame += 8;
         }
 
-        Integer depth = FastMath.max(0, getHeight());
+        int x = position.getX() * SIZE;
+        int y = position.getY() * SIZE + (HEIGHT_MAX - getHeight()) * STEP_HEIGHT - STEP_HEIGHT;
 
-        g.drawImage(PLAYER.getImage(), position.getX() * TILE_SIZE, position.getY() * TILE_SIZE + (5 - depth) * 8 - 8,
-                position.getX() * TILE_SIZE + TILE_SIZE,
-                position.getY() * TILE_SIZE + (5 - depth) * 8 - 8 + TILE_SIZE, frame * TILE_SIZE, 0, (frame + 1) * TILE_SIZE, TILE_SIZE);
+        g.drawImage(PLAYER.getImage(), x, y, x + SIZE, y + SIZE, frame * SIZE, 0, (frame + 1) * SIZE, SIZE);
     }
 
     public void drawCursor(Graphics g) {
         Tile tile = map.getTile(cursorPosition);
         if (tile != null) {
             g.setColor(YELLOW.getColor());
-            g.drawRect(cursorPosition.getX() * TILE_SIZE, cursorPosition.getY() * TILE_SIZE + (5 - tile.getHeight()) * 8,
-                    TILE_SIZE - 1, TILE_SIZE - 1);
+            g.drawRect(cursorPosition.getX() * SIZE, cursorPosition.getY() * SIZE + (HEIGHT_MAX - tile.getHeight()) * STEP_HEIGHT,
+                    SIZE - 1, SIZE - 1);
         }
     }
 
@@ -157,7 +157,7 @@ public class Player {
         return map.getTile(position).isFlooded();
     }
 
-    public Integer getHeight() {
+    public int getHeight() {
         return map.getTile(position).getHeight();
     }
 
