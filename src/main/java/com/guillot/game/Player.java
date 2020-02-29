@@ -37,7 +37,7 @@ public class Player {
 
     private Direction direction;
 
-    private boolean holding;
+    private HoldingTile holdingTile;
 
     private long lastAnimation;
 
@@ -47,7 +47,7 @@ public class Player {
         this.map = map;
         this.position = new Point();
         this.cursorPosition = new Point();
-        this.holding = false;
+        this.holdingTile = null;
         this.direction = BOTTOM;
         this.animation = 0;
         this.lastAnimation = System.currentTimeMillis();
@@ -110,19 +110,23 @@ public class Player {
         }
 
         if (GUI.get().isKeyPressed(KEY_E) || GUI.get().isKeyPressed(KEY_SPACE) || Controller.get().isButtonPressed()) {
-            if (holding && map.increaseDepth(position.getX(), position.getY(), cursorPosition.getX(), cursorPosition.getY())) {
-                holding = !holding;
-                Sounds.DROP.getSound().play();
-            } else if (!holding && map.decreaseDepth(position.getX(), position.getY(), cursorPosition.getX(), cursorPosition.getY())) {
-                holding = !holding;
-                Sounds.TAKE.getSound().play();
+            if (isHolding()) {
+                if (map.increaseDepth(holdingTile, position.getX(), position.getY(), cursorPosition.getX(), cursorPosition.getY())) {
+                    holdingTile = null;
+                    Sounds.DROP.getSound().play();
+                }
+            } else {
+                holdingTile = map.decreaseDepth(position.getX(), position.getY(), cursorPosition.getX(), cursorPosition.getY());
+                if (isHolding()) {
+                    Sounds.TAKE.getSound().play();
+                }
             }
         }
     }
 
     public void draw(Graphics g) {
         int frame = direction.getFrame() * 2 + animation;
-        if (holding) {
+        if (isHolding()) {
             frame += 8;
         }
 
@@ -162,7 +166,7 @@ public class Player {
     }
 
     public boolean isHolding() {
-        return holding;
+        return holdingTile != null;
     }
 
     public int getX() {

@@ -213,19 +213,19 @@ public class Map {
                     Tile tile = getTile(i, j);
                     if (tile != null && tile.isFlooded()) {
                         if (getTile(i - 1, j) != null && getTile(i - 1, j).getHeight() < tile.getHeight()) {
-                            getTile(i - 1, j).setWaterHeight(tile.getHeight() - getTile(i - 1, j).getHeight());
+                            getTile(i - 1, j).increaseWaterHeight();
                         }
 
                         if (getTile(i + 1, j) != null && getTile(i + 1, j).getHeight() < tile.getHeight()) {
-                            getTile(i + 1, j).setWaterHeight(tile.getHeight() - getTile(i + 1, j).getHeight());
+                            getTile(i + 1, j).increaseWaterHeight();
                         }
 
                         if (getTile(i, j - 1) != null && getTile(i, j - 1).getHeight() < tile.getHeight()) {
-                            getTile(i, j - 1).setWaterHeight(tile.getHeight() - getTile(i, j - 1).getHeight());
+                            getTile(i, j - 1).increaseWaterHeight();
                         }
 
                         if (getTile(i, j + 1) != null && getTile(i, j + 1).getHeight() < tile.getHeight()) {
-                            getTile(i, j + 1).setWaterHeight(tile.getHeight() - getTile(i, j + 1).getHeight());
+                            getTile(i, j + 1).increaseWaterHeight();
                         }
                     }
                 }
@@ -275,11 +275,18 @@ public class Map {
         return tiles[x][y];
     }
 
-    public boolean increaseDepth(int x, int y, int targetX, int targetY) {
+    public boolean increaseDepth(HoldingTile holdingTile, int x, int y, int targetX, int targetY) {
         Tile target = getTile(targetX, targetY);
         if (target != null) {
             if (target.getHeight() - tiles[x][y].getHeight() <= 0) {
-                target.increaseHeight(true);
+                switch (holdingTile) {
+                case DIRT:
+                    target.increaseHeight(true);
+                    break;
+                case WATER:
+                    target.increaseWaterHeight();
+                    break;
+                }
 
                 return true;
             }
@@ -288,16 +295,15 @@ public class Map {
         return false;
     }
 
-    public boolean decreaseDepth(int x, int y, int targetX, int targetY) {
+    public HoldingTile decreaseDepth(int x, int y, int targetX, int targetY) {
         Tile target = getTile(targetX, targetY);
         if (target != null) {
             if (target.getHeight() - tiles[x][y].getHeight() == 1) {
-                target.decreaseHeight(true);
-                return true;
+                return target.decreaseHeight(true);
             }
         }
 
-        return false;
+        return null;
     }
 
     public boolean isAnimating() {

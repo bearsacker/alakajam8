@@ -49,12 +49,14 @@ public class Tile {
         g.drawImage(TILESHEET.getImage(), x, y, x + SIZE, y + TILESHEET.getImage().getHeight(), height * SIZE + w, 0,
                 (height + 1) * SIZE + w, TILESHEET.getImage().getHeight());
 
-        if (isFlooded()) {
-            for (int i = 0; i < waterHeight; i++) {
-                g.drawImage(WATER.getImage(), x, y + SIZE - (height + i) * STEP_HEIGHT);
-            }
-        } else if (SUNNY.equals(weather) && flower != null) {
+        if (SUNNY.equals(weather) && flower != null) {
             flower.draw(g, height);
+        }
+
+        w = weather.getValue() * SIZE;
+        for (int i = 0; i < waterHeight; i++) {
+            int y2 = y + SIZE - (height + i) * STEP_HEIGHT;
+            g.drawImage(WATER.getImage(), x, y2, x + SIZE, y2 + SIZE + STEP_HEIGHT, w, 0, w + SIZE, SIZE + STEP_HEIGHT);
         }
     }
 
@@ -63,7 +65,7 @@ public class Tile {
     }
 
     public boolean isFlooded() {
-        return waterHeight > 0;
+        return SUNNY.equals(weather) && waterHeight > 0;
     }
 
     public int getWaterHeight() {
@@ -87,7 +89,7 @@ public class Tile {
     }
 
     public void increaseHeight(boolean replaceWater) {
-        if (replaceWater && isFlooded()) {
+        if (replaceWater && waterHeight > 0) {
             waterHeight--;
         }
 
@@ -96,12 +98,20 @@ public class Tile {
         }
     }
 
-    public void decreaseHeight(boolean replaceWater) {
-        if (replaceWater && isFlooded()) {
+    public void increaseWaterHeight() {
+        waterHeight++;
+    }
+
+    public HoldingTile decreaseHeight(boolean replaceWater) {
+        if (replaceWater && waterHeight > 0) {
             waterHeight--;
+            return HoldingTile.WATER;
         } else if (height > 0) {
             height--;
+            return HoldingTile.DIRT;
         }
+
+        return null;
     }
 
 }
