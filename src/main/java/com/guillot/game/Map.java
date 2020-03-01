@@ -6,7 +6,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.newdawn.slick.Graphics;
@@ -32,6 +34,8 @@ public class Map {
     private int animation;
 
     private long lastAnimationTime;
+
+    private long lastWaterAnimationTime;
 
     public Map() throws SlickException {
         player = new Player(this);
@@ -208,27 +212,39 @@ public class Map {
         } else {
             player.update();
 
-            for (int i = 0; i < getWidth(); i++) {
-                for (int j = 0; j < getHeight(); j++) {
-                    Tile tile = getTile(i, j);
-                    if (tile != null && tile.isFlooded()) {
-                        if (getTile(i - 1, j) != null && getTile(i - 1, j).getHeight() < tile.getHeight()) {
-                            getTile(i - 1, j).increaseWaterHeight();
-                        }
+            long currentTime = System.currentTimeMillis();
 
-                        if (getTile(i + 1, j) != null && getTile(i + 1, j).getHeight() < tile.getHeight()) {
-                            getTile(i + 1, j).increaseWaterHeight();
-                        }
+            if (currentTime - lastWaterAnimationTime > 75) {
+                Set<Point> tileToIncrease = new HashSet<>();
 
-                        if (getTile(i, j - 1) != null && getTile(i, j - 1).getHeight() < tile.getHeight()) {
-                            getTile(i, j - 1).increaseWaterHeight();
-                        }
+                for (int i = 0; i < getWidth(); i++) {
+                    for (int j = 0; j < getHeight(); j++) {
+                        Tile tile = getTile(i, j);
+                        if (tile != null && tile.isFlooded()) {
+                            if (getTile(i - 1, j) != null && getTile(i - 1, j).getHeight() < tile.getHeight()) {
+                                tileToIncrease.add(new Point(i - 1, j));
+                            }
 
-                        if (getTile(i, j + 1) != null && getTile(i, j + 1).getHeight() < tile.getHeight()) {
-                            getTile(i, j + 1).increaseWaterHeight();
+                            if (getTile(i + 1, j) != null && getTile(i + 1, j).getHeight() < tile.getHeight()) {
+                                tileToIncrease.add(new Point(i + 1, j));
+                            }
+
+                            if (getTile(i, j - 1) != null && getTile(i, j - 1).getHeight() < tile.getHeight()) {
+                                tileToIncrease.add(new Point(i, j - 1));
+                            }
+
+                            if (getTile(i, j + 1) != null && getTile(i, j + 1).getHeight() < tile.getHeight()) {
+                                tileToIncrease.add(new Point(i, j + 1));
+                            }
                         }
                     }
                 }
+
+                for (Point point : tileToIncrease) {
+                    getTile(point).increaseWaterHeight();
+                }
+
+                lastWaterAnimationTime = currentTime;
             }
         }
     }
