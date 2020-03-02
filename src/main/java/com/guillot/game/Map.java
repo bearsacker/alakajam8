@@ -2,6 +2,7 @@ package com.guillot.game;
 
 import static com.guillot.game.Images.TILESHEET;
 import static com.guillot.game.Tile.SIZE;
+import static com.guillot.game.Weather.SNOW;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.BufferedReader;
@@ -300,7 +301,9 @@ public class Map {
                     target.increaseHeight(true);
                     break;
                 case WATER:
-                    target.increaseWaterHeight();
+                    if (target.getWaterHeight() == 0 || SNOW.equals(target.getWeather())) {
+                        target.increaseWaterHeight();
+                    }
                     break;
                 }
 
