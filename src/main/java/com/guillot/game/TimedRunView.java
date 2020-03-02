@@ -42,7 +42,7 @@ public class TimedRunView extends View {
     public void start() throws Exception {
         setBackgroundColor(BACKGROUND.getColor());
 
-        level = 11;
+        level = 12;
         time = System.currentTimeMillis();
         map = new Map("maps/" + level + ".map");
         player = new Player(map);

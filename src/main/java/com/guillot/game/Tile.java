@@ -2,6 +2,7 @@ package com.guillot.game;
 
 import static com.guillot.game.Images.TILESHEET;
 import static com.guillot.game.Images.WATER;
+import static com.guillot.game.Weather.SNOW;
 import static com.guillot.game.Weather.SUNNY;
 
 import org.newdawn.slick.Graphics;
@@ -53,7 +54,7 @@ public class Tile {
             flower.draw(g, height);
         }
 
-        w = weather.getValue() * SIZE;
+        w = SNOW.equals(weather) && waterHeight == 1 ? SIZE : 0;
         for (int i = 0; i < waterHeight; i++) {
             int y2 = y + SIZE - (height + i) * STEP_HEIGHT;
             g.drawImage(WATER.getImage(), x, y2, x + SIZE, y2 + SIZE + STEP_HEIGHT, w, 0, w + SIZE, SIZE + STEP_HEIGHT);
@@ -65,7 +66,7 @@ public class Tile {
     }
 
     public boolean isFlooded() {
-        return SUNNY.equals(weather) && waterHeight > 0;
+        return (SUNNY.equals(weather) && waterHeight > 0) || waterHeight > 1;
     }
 
     public int getWaterHeight() {
