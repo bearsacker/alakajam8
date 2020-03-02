@@ -81,7 +81,7 @@ public class MenuView extends View {
 
     @Override
     public void paintComponents(Graphics g) throws Exception {
-        map.draw(g, 0, -Tile.SIZE);
+        map.draw(g, 0, -Tile.SIZE, null);
         g.drawImage(LOGO.getImage(), EngineConfig.WIDTH / 2 - LOGO.getImage().getWidth() / 2, 80);
 
         super.paintComponents(g);

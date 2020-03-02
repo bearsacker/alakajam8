@@ -220,4 +220,14 @@ public class Player {
 
         return (destinationTile.getHeight() - getHeight()) <= 1;
     }
+
+    public DeathType isDead() {
+        if (isDrowned()) {
+            return DeathType.DROWNED;
+        } else if (isBlocked()) {
+            return DeathType.BLOCKED;
+        }
+
+        return null;
+    }
 }

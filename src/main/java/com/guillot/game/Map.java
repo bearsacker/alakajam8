@@ -24,8 +24,6 @@ public class Map {
 
     private Tile[][] tiles;
 
-    private Player player;
-
     private String sentence;
 
     private Image image;
@@ -39,7 +37,6 @@ public class Map {
     private long lastWaterAnimationTime;
 
     public Map() throws SlickException {
-        player = new Player(this);
         animation = -1;
     }
 
@@ -157,7 +154,7 @@ public class Map {
     }
 
     public boolean isComplete() {
-        if (player.isHolding()) {
+        if (isAnimating() || isAnimationEnded()) {
             return false;
         }
 
@@ -211,8 +208,6 @@ public class Map {
                 lastAnimationTime = currentTime;
             }
         } else {
-            player.update();
-
             long currentTime = System.currentTimeMillis();
 
             if (currentTime - lastWaterAnimationTime > 75) {
@@ -250,7 +245,7 @@ public class Map {
         }
     }
 
-    public void draw(Graphics g, float x, float y) {
+    public void draw(Graphics g, float x, float y, Player player) {
         graphics.clear();
 
         for (int i = 0; i < getWidth(); i++) {
@@ -259,10 +254,12 @@ public class Map {
                 if (tile != null) {
                     tile.draw(graphics);
 
-                    if (player.isAtPosition(i, j)) {
-                        player.draw(graphics);
-                    } else if (player.isLookingAtPosition(i, j)) {
-                        player.drawCursor(graphics);
+                    if (player != null) {
+                        if (player.isAtPosition(i, j)) {
+                            player.draw(graphics);
+                        } else if (player.isLookingAtPosition(i, j)) {
+                            player.drawCursor(graphics);
+                        }
                     }
                 }
             }
@@ -271,9 +268,9 @@ public class Map {
         g.drawImage(image, x, y);
     }
 
-    public void draw(Graphics g) {
+    public void draw(Graphics g, Player player) {
         draw(g, EngineConfig.WIDTH / 2 - image.getCenterOfRotationX(),
-                EngineConfig.HEIGHT / 2 - image.getCenterOfRotationY() + SIZE);
+                EngineConfig.HEIGHT / 2 - image.getCenterOfRotationY() + SIZE, player);
     }
 
     public Tile getTile(Point position) {
@@ -336,16 +333,6 @@ public class Map {
 
     public boolean isAnimationEnded() {
         return animation >= getWidth() * 2 + 4;
-    }
-
-    public DeathType isDead() {
-        if (player.isDrowned()) {
-            return DeathType.DROWNED;
-        } else if (player.isBlocked()) {
-            return DeathType.BLOCKED;
-        }
-
-        return null;
     }
 
     public String getSentence() {

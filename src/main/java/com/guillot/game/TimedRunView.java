@@ -20,6 +20,8 @@ public class TimedRunView extends View {
 
     private final static SimpleDateFormat TIMER_FORMAT = new SimpleDateFormat("mm:ss");
 
+    private Player player;
+
     private Map map;
 
     private Text levelText;
@@ -43,6 +45,7 @@ public class TimedRunView extends View {
         level = 11;
         time = System.currentTimeMillis();
         map = new Map("maps/" + level + ".map");
+        player = new Player(map);
         sentence = new Text(map.getSentence(), 64, 80, SENTENCE.getColor());
         sentence.setX(EngineConfig.WIDTH / 2 - sentence.getWidth() / 2);
 
@@ -61,11 +64,12 @@ public class TimedRunView extends View {
 
         if (isFocused()) {
             map.update();
+            player.update();
 
             timerText.setText(TIMER_FORMAT.format(new Date(System.currentTimeMillis() - time)));
             timerText.setX(EngineConfig.WIDTH - timerText.getWidth() - 24);
 
-            if (map.isComplete() && !map.isAnimating() && !map.isAnimationEnded()) {
+            if (!player.isHolding() && map.isComplete()) {
                 map.launchAnimation();
                 Sounds.SUCCESS.getSound().play();
             }
@@ -76,6 +80,7 @@ public class TimedRunView extends View {
 
                 try {
                     map = new Map("maps/" + level + ".map");
+                    player = new Player(map);
                     sentence.setText(map.getSentence());
                     sentence.setX(EngineConfig.WIDTH / 2 - sentence.getWidth() / 2);
                 } catch (NullPointerException e) {
@@ -85,7 +90,7 @@ public class TimedRunView extends View {
             }
 
             if (!map.isComplete() && !map.isAnimating()) {
-                DeathType death = map.isDead();
+                DeathType death = player.isDead();
                 if (death != null) {
                     defeatView.setDeathType(death);
                     defeatView.setVisible(true);
@@ -103,13 +108,14 @@ public class TimedRunView extends View {
         g.setColor(OVERLAY.getColor());
         g.fillRect(0, 0, EngineConfig.WIDTH, 48);
 
-        map.draw(g);
+        map.draw(g, player);
 
         super.paintComponents(g);
     }
 
     public void retryLevel() throws Exception {
         map = new Map("maps/" + level + ".map");
+        player = new Player(map);
         defeatView.setVisible(false);
     }
 
