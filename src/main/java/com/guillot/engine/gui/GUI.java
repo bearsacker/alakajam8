@@ -17,6 +17,8 @@ public class GUI {
 
     public final static String DEFAULT_FONT = "fonts/8bits.ttf";
 
+    private static int INPUT_BUFFER_SIZE = 50;
+
     private static GUI instance = new GUI();
 
     private GameContainer container;
@@ -27,7 +29,7 @@ public class GUI {
 
     private int mouseY;
 
-    private boolean[] keysPressed;
+    private int[] keysPressed;
 
     private boolean[] mouseButtonsDown;
 
@@ -47,7 +49,10 @@ public class GUI {
             awtFont = awtFont.deriveFont(24f);
             font = new TrueTypeFont(awtFont, false);
 
-            keysPressed = new boolean[256];
+            keysPressed = new int[256];
+            for (int i = 0; i < 256; i++) {
+                keysPressed[i] = -1;
+            }
             mouseButtonsDown = new boolean[Mouse.getButtonCount()];
             mouseButtonsReleased = new boolean[Mouse.getButtonCount()];
         } catch (Exception e) {
@@ -118,7 +123,19 @@ public class GUI {
         mouseY = input.getMouseY() / 2;
 
         for (int i = 0; i < keysPressed.length; i++) {
-            keysPressed[i] = input.isKeyPressed(i);
+            if (input.isKeyDown(i)) {
+                if (keysPressed[i] > 0) {
+                    keysPressed[i]--;
+                } else if (keysPressed[i] == 0) {
+                    keysPressed[i] = INPUT_BUFFER_SIZE;
+                }
+            } else {
+                keysPressed[i] = -1;
+            }
+
+            if (input.isKeyPressed(i)) {
+                keysPressed[i] = INPUT_BUFFER_SIZE;
+            }
         }
 
         for (int i = 0; i < mouseButtonsReleased.length; i++) {
@@ -165,7 +182,7 @@ public class GUI {
 
     public int getLastKeyPressed() {
         for (int i = 0; i < keysPressed.length; i++) {
-            if (keysPressed[i]) {
+            if (keysPressed[i] == INPUT_BUFFER_SIZE) {
                 return i;
             }
         }
@@ -174,7 +191,7 @@ public class GUI {
     }
 
     public boolean isKeyPressed(int code) {
-        return keysPressed[code];
+        return keysPressed[code] == INPUT_BUFFER_SIZE;
     }
 
     public boolean isMouseButtonReleased(int button) {

@@ -5,7 +5,7 @@ import org.newdawn.slick.Input;
 
 public class Controller implements ControllerListener {
 
-    private static int BUFFER_SIZE = 32;
+    private static int BUFFER_SIZE = 50;
 
     private static Controller instance = new Controller();
 
