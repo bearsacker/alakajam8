@@ -33,7 +33,7 @@ public class MenuView extends View {
     @Override
     public void start() throws Exception {
         if (!Sounds.MUSIC.getSound().playing()) {
-            Sounds.MUSIC.getSound().loop();
+            // Sounds.MUSIC.getSound().loop();
         }
 
         buttonRun = new Button("Timed Run", EngineConfig.WIDTH / 2 - 96, 240, 192, 32);
