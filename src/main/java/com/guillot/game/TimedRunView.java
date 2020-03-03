@@ -70,7 +70,7 @@ public class TimedRunView extends View {
             timerText.setX(EngineConfig.WIDTH - timerText.getWidth() - 24);
 
             if (!player.isHolding() && map.isComplete()) {
-                map.launchAnimation();
+                map.launchAnimation(75);
                 Sounds.SUCCESS.getSound().play();
             }
 

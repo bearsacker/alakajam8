@@ -32,6 +32,8 @@ public class Map {
 
     private int animation;
 
+    private int animationStep;
+
     private long lastAnimationTime;
 
     private long lastWaterAnimationTime;
@@ -175,7 +177,7 @@ public class Map {
         if (isAnimating()) {
             long currentTime = System.currentTimeMillis();
 
-            if (currentTime - lastAnimationTime > 75) {
+            if (currentTime - lastAnimationTime > animationStep) {
                 for (int i = animation; i >= 0; i--) {
                     Tile depth = getTile(i, animation - i);
                     if (depth != null) {
@@ -329,8 +331,9 @@ public class Map {
         return animation >= 0 && !isAnimationEnded();
     }
 
-    public void launchAnimation() {
+    public void launchAnimation(int step) {
         animation = 0;
+        animationStep = step;
         lastAnimationTime = System.currentTimeMillis();
     }
 
