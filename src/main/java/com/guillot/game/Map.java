@@ -238,6 +238,9 @@ public class Map {
 
                 for (Point point : tileToIncrease) {
                     getTile(point).increaseWaterHeight();
+                    if (!Sounds.WATER.getSound().playing()) {
+                        Sounds.WATER.getSound().play();
+                    }
                 }
 
                 lastWaterAnimationTime = currentTime;

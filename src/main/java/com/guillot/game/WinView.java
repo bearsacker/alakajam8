@@ -39,8 +39,6 @@ public class WinView extends SubView {
         });
 
         add(text, buttonMenu);
-
-        Sounds.END.getSound().play();
     }
 
     @Override

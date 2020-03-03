@@ -127,7 +127,7 @@ public class Player {
     public void draw(Graphics g) {
         int frame = direction.getFrame() * 2 + animation;
         if (isHolding()) {
-            frame += 8;
+            frame += (holdingTile.getValue() + 1) * 8;
         }
 
         int x = position.getX() * SIZE;
