@@ -49,30 +49,46 @@ public class Point {
         return point != null && is(point.x, point.y);
     }
 
-    public int distanceFrom(Point point) {
+    public double distanceFrom(Point point) {
         if (point != null) {
             int dy = point.getY() - getY();
             int dx = point.getX() - getX();
-            return (int) Math.sqrt(dy * dy + dx * dx);
+            return Math.sqrt(dy * dy + dx * dx);
         }
 
         return 0;
     }
 
     public void incrementX() {
-        x++;
+        incrementX(1);
+    }
+
+    public void incrementX(int value) {
+        x += value;
     }
 
     public void decrementX() {
-        x--;
+        decrementX(1);
+    }
+
+    public void decrementX(int value) {
+        x -= value;
     }
 
     public void incrementY() {
-        y++;
+        incrementY(1);
+    }
+
+    public void incrementY(int value) {
+        y += value;
     }
 
     public void decrementY() {
-        y--;
+        decrementY(1);
+    }
+
+    public void decrementY(int value) {
+        y -= value;
     }
 
     @Override

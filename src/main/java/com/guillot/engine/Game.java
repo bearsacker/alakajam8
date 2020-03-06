@@ -3,6 +3,7 @@ package com.guillot.engine;
 import static com.guillot.engine.configs.EngineConfig.FPS;
 import static com.guillot.engine.configs.EngineConfig.FULLSCREEN;
 import static com.guillot.engine.configs.EngineConfig.HEIGHT;
+import static com.guillot.engine.configs.EngineConfig.SHOW_FPS;
 import static com.guillot.engine.configs.EngineConfig.WIDTH;
 
 import org.newdawn.slick.AppGameContainer;
@@ -29,7 +30,7 @@ public class Game extends BasicGame {
 
         AppGameContainer app = new AppGameContainer(this);
         app.setDisplayMode(WIDTH * 2, HEIGHT * 2, FULLSCREEN);
-        app.setShowFPS(false);
+        app.setShowFPS(SHOW_FPS);
         if (icon != null) {
             app.setIcon(icon);
         }

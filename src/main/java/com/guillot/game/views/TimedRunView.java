@@ -1,4 +1,4 @@
-package com.guillot.game;
+package com.guillot.game.views;
 
 import static com.guillot.game.Colors.BACKGROUND;
 import static com.guillot.game.Colors.OVERLAY;
@@ -15,6 +15,10 @@ import com.guillot.engine.configs.EngineConfig;
 import com.guillot.engine.gui.GUI;
 import com.guillot.engine.gui.Text;
 import com.guillot.engine.gui.View;
+import com.guillot.game.DeathType;
+import com.guillot.game.Map;
+import com.guillot.game.Player;
+import com.guillot.game.Sounds;
 
 public class TimedRunView extends View {
 
@@ -42,7 +46,7 @@ public class TimedRunView extends View {
     public void start() throws Exception {
         setBackgroundColor(BACKGROUND.getColor());
 
-        level = 11;
+        level = 8;
         time = System.currentTimeMillis();
         map = new Map("maps/" + level + ".map");
         player = new Player(map);
@@ -70,7 +74,7 @@ public class TimedRunView extends View {
             timerText.setX(EngineConfig.WIDTH - timerText.getWidth() - 24);
 
             if (!player.isHolding() && map.isComplete()) {
-                map.launchAnimation(75);
+                map.launchAnimation();
                 Sounds.SUCCESS.getSound().play();
             }
 

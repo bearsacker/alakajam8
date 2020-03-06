@@ -20,9 +20,10 @@ public class Flower {
         this.frame = NumberGenerator.get().randomInt(FLOWERS.getImage().getWidth() / SIZE);
     }
 
-    public void draw(Graphics g, int depth) {
-        int x = position.getX() * SIZE;
-        int y = position.getY() * SIZE + (HEIGHT_MAX - depth) * STEP_HEIGHT;
+    public void draw(Graphics g, int height, int offsetY) {
+        int x = position.getX() * 16 + position.getY() * 16;
+        int y = position.getY() * 13 - position.getX() * 13 + (HEIGHT_MAX - height) * STEP_HEIGHT + offsetY;
+
         g.drawImage(FLOWERS.getImage(), x, y, x + SIZE, y + SIZE, frame * SIZE, 0, (frame + 1) * SIZE, SIZE);
     }
 

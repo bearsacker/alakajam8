@@ -14,6 +14,8 @@ public final class EngineConfig extends Config {
 
     public final static int FPS = get().getInt("engine.fps");
 
+    public final static boolean SHOW_FPS = get().getBoolean("engine.fps.show");
+
     private EngineConfig(String file) {
         super(file);
     }

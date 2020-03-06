@@ -40,6 +40,7 @@ public class Button extends Component {
         super();
 
         this.image = new Image(DEFAULT_BUTTON_SPRITE);
+        this.image.setFilter(Image.FILTER_NEAREST);
         this.x = x;
         this.y = y;
         this.text = text;
@@ -57,6 +58,7 @@ public class Button extends Component {
         super();
 
         this.image = new Image(DEFAULT_BUTTON_SPRITE);
+        this.image.setFilter(Image.FILTER_NEAREST);
         this.x = x;
         this.y = y;
         this.text = text;

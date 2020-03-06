@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
 import com.guillot.engine.configs.EngineConfig;
@@ -26,13 +25,11 @@ public class Map {
 
     private String sentence;
 
-    private Image image;
+    private DepthBufferedImage image;
 
-    private Graphics graphics;
+    private Point position;
 
     private int animation;
-
-    private int animationStep;
 
     private long lastAnimationTime;
 
@@ -52,49 +49,85 @@ public class Map {
             }
         }
 
-        int numberSummits = NumberGenerator.get().randomInt(10, 30);
-        for (int i = 0; i < numberSummits; i++) {
+        for (int i = 0; i < 32; i++) {
+            boolean snowed = NumberGenerator.get().randomDouble() > .8f;
             int x = NumberGenerator.get().randomInt(getWidth());
             int y = NumberGenerator.get().randomInt(getWidth());
             int depth = NumberGenerator.get().randomInt(2, 5);
 
             getTile(x, y).setHeight(depth);
+            if (snowed) {
+                getTile(x, y).setWeather(SNOW);
+            }
             double type = NumberGenerator.get().randomDouble();
 
             if (type < .25f) {
                 if (getTile(x + 1, y) != null) {
                     getTile(x + 1, y).setHeight(depth);
+                    if (snowed) {
+                        getTile(x + 1, y).setWeather(SNOW);
+                    }
                 }
                 if (getTile(x + 1, y - 1) != null) {
                     getTile(x + 1, y - 1).setHeight(depth);
+                    if (snowed) {
+                        getTile(x + 1, y - 1).setWeather(SNOW);
+                    }
                 }
                 if (getTile(x, y - 1) != null) {
                     getTile(x, y - 1).setHeight(depth);
+                    if (snowed) {
+                        getTile(x, y - 1).setWeather(SNOW);
+                    }
                 }
             } else if (type < .4f && getTile(x + 1, y) != null) {
                 getTile(x + 1, y).setHeight(depth);
+                if (snowed) {
+                    getTile(x + 1, y).setWeather(SNOW);
+                }
             } else if (type < .55f && getTile(x, y + 1) != null) {
                 getTile(x, y + 1).setHeight(depth);
+                if (snowed) {
+                    getTile(x, y + 1).setWeather(SNOW);
+                }
             }
         }
 
         for (int k = 0; k < 5; k++) {
             for (int i = 0; i < getWidth(); i++) {
                 for (int j = 0; j < getHeight(); j++) {
-                    if (getTile(i - 1, j) != null && getTile(i - 1, j).getHeight() < getTile(i, j).getHeight() - 1) {
+                    boolean snowed = SNOW.equals(getTile(i, j).getWeather());
+
+                    if (getTile(i - 1, j) != null && getTile(i - 1, j).getHeight() <= getTile(i, j).getHeight() - 1) {
                         getTile(i - 1, j).setHeight(getTile(i, j).getHeight() - 1);
+
+                        if (snowed) {
+                            getTile(i - 1, j).setWeather(SNOW);
+                        }
                     }
 
-                    if (getTile(i + 1, j) != null && getTile(i + 1, j).getHeight() < getTile(i, j).getHeight() - 1) {
+                    if (getTile(i + 1, j) != null && getTile(i + 1, j).getHeight() <= getTile(i, j).getHeight() - 1) {
                         getTile(i + 1, j).setHeight(getTile(i, j).getHeight() - 1);
+
+                        if (snowed) {
+                            getTile(i + 1, j).setWeather(SNOW);
+                        }
                     }
 
-                    if (getTile(i, j - 1) != null && getTile(i, j - 1).getHeight() < getTile(i, j).getHeight() - 1) {
+                    if (getTile(i, j - 1) != null && getTile(i, j - 1).getHeight() <= getTile(i, j).getHeight() - 1) {
                         getTile(i, j - 1).setHeight(getTile(i, j).getHeight() - 1);
+
+                        if (snowed) {
+                            getTile(i, j - 1).setWeather(SNOW);
+                        }
                     }
 
-                    if (getTile(i, j + 1) != null && getTile(i, j + 1).getHeight() < getTile(i, j).getHeight() - 1) {
+                    if (getTile(i, j + 1) != null && getTile(i, j + 1).getHeight() <= getTile(i, j).getHeight() - 1) {
                         getTile(i, j + 1).setHeight(getTile(i, j).getHeight() - 1);
+
+                        if (snowed) {
+                            getTile(i, j + 1).setWeather(SNOW);
+                        }
                     }
                 }
             }
@@ -108,11 +141,14 @@ public class Map {
             }
         }
 
-        image = new Image(width * SIZE, height * SIZE + (TILESHEET.getImage().getHeight() - SIZE));
-        graphics = image.getGraphics();
+        int imageWidth = (getWidth() + getHeight()) * SIZE / 2;
+        int imageHeight = (getWidth() + getHeight()) * TILESHEET.getImage().getHeight() / 2;
+        image = new DepthBufferedImage(imageWidth, imageHeight);
+        position = new Point((int) (EngineConfig.WIDTH / 2 - image.getCenterOfRotationX()),
+                (int) (EngineConfig.HEIGHT / 2 - image.getCenterOfRotationY()));
     }
 
-    public Map(String path) throws Exception {
+    public Map(String path) throws SlickException {
         this();
 
         List<String> lines = new BufferedReader(new InputStreamReader(FileLoader.streamFromResource(path), UTF_8)).lines()
@@ -143,8 +179,11 @@ public class Map {
 
         sentence = lines.get(0);
 
-        image = new Image(getWidth() * SIZE, getHeight() * SIZE + (TILESHEET.getImage().getHeight() - SIZE));
-        graphics = image.getGraphics();
+        int imageWidth = (getWidth() + getHeight()) * SIZE / 2;
+        int imageHeight = (getWidth() + getHeight()) * TILESHEET.getImage().getHeight() / 2;
+        image = new DepthBufferedImage(imageWidth, imageHeight);
+        position = new Point((int) (EngineConfig.WIDTH / 2 - image.getCenterOfRotationX()),
+                (int) (EngineConfig.HEIGHT / 2 - image.getCenterOfRotationY()));
     }
 
     public int getWidth() {
@@ -177,30 +216,30 @@ public class Map {
         if (isAnimating()) {
             long currentTime = System.currentTimeMillis();
 
-            if (currentTime - lastAnimationTime > animationStep) {
-                for (int i = animation; i >= 0; i--) {
-                    Tile depth = getTile(i, animation - i);
+            if (currentTime - lastAnimationTime > 75) {
+                for (int i = 0; i < getWidth(); i++) {
+                    Tile depth = getTile(i, animation);
                     if (depth != null) {
                         depth.increaseHeight(false);
                     }
                 }
 
-                for (int i = animation + 1; i >= 0; i--) {
-                    Tile depth = getTile(i, animation - 1 - i);
+                for (int i = 0; i < getWidth(); i++) {
+                    Tile depth = getTile(i, animation - 1);
                     if (depth != null) {
                         depth.increaseHeight(false);
                     }
                 }
 
-                for (int i = animation + 2; i >= 0; i--) {
-                    Tile depth = getTile(i, animation - 2 - i);
+                for (int i = 0; i < getWidth(); i++) {
+                    Tile depth = getTile(i, animation - 4);
                     if (depth != null) {
                         depth.decreaseHeight(false);
                     }
                 }
 
-                for (int i = animation + 3; i >= 0; i--) {
-                    Tile depth = getTile(i, animation - 3 - i);
+                for (int i = 0; i < getWidth(); i++) {
+                    Tile depth = getTile(i, animation - 5);
                     if (depth != null) {
                         depth.decreaseHeight(false);
                     }
@@ -250,32 +289,31 @@ public class Map {
         }
     }
 
-    public void draw(Graphics g, float x, float y, Player player) {
-        graphics.clear();
+    public void draw(Graphics g, Player player) {
+        image.clear();
 
-        for (int i = 0; i < getWidth(); i++) {
+        int offsetY = image.getHeight() / 2 - TILESHEET.getImage().getHeight() / 2;
+
+        for (int i = getWidth(); i >= 0; i--) {
             for (int j = 0; j < getHeight(); j++) {
                 Tile tile = getTile(i, j);
                 if (tile != null) {
-                    tile.draw(graphics);
+                    tile.draw(image, offsetY);
 
                     if (player != null) {
                         if (player.isAtPosition(i, j)) {
-                            player.draw(graphics);
-                        } else if (player.isLookingAtPosition(i, j)) {
-                            player.drawCursor(graphics);
+                            player.draw(image.getGraphics(), offsetY);
+                        }
+
+                        if (player.isCursorAtPosition(i, j)) {
+                            player.drawCursor(image.getGraphics(), offsetY);
                         }
                     }
                 }
             }
         }
 
-        g.drawImage(image, x, y);
-    }
-
-    public void draw(Graphics g, Player player) {
-        draw(g, EngineConfig.WIDTH / 2 - image.getCenterOfRotationX(),
-                EngineConfig.HEIGHT / 2 - image.getCenterOfRotationY() + SIZE, player);
+        g.drawImage(image.getImage(), position.getX(), position.getY());
     }
 
     public Tile getTile(Point position) {
@@ -294,8 +332,8 @@ public class Map {
         return tiles[x][y];
     }
 
-    public boolean increaseDepth(HoldingTile holdingTile, int x, int y, int targetX, int targetY) {
-        Tile target = getTile(targetX, targetY);
+    public boolean increaseDepth(HoldingTile holdingTile, int x, int y, Point targetPosition) {
+        Tile target = getTile(targetPosition);
         if (target != null) {
             if (target.getHeight() - tiles[x][y].getHeight() <= 0) {
                 switch (holdingTile) {
@@ -316,8 +354,8 @@ public class Map {
         return false;
     }
 
-    public HoldingTile decreaseDepth(int x, int y, int targetX, int targetY) {
-        Tile target = getTile(targetX, targetY);
+    public HoldingTile decreaseDepth(int x, int y, Point targetPosition) {
+        Tile target = getTile(targetPosition);
         if (target != null) {
             if (target.getHeight() - tiles[x][y].getHeight() == 1) {
                 return target.decreaseHeight(true);
@@ -331,9 +369,8 @@ public class Map {
         return animation >= 0 && !isAnimationEnded();
     }
 
-    public void launchAnimation(int step) {
+    public void launchAnimation() {
         animation = 0;
-        animationStep = step;
         lastAnimationTime = System.currentTimeMillis();
     }
 
@@ -343,5 +380,26 @@ public class Map {
 
     public String getSentence() {
         return sentence;
+    }
+
+    public void setPosition(int x, int y) {
+        position.setX(x);
+        position.setY(y);
+    }
+
+    public Point getPosition() {
+        return position;
+    }
+
+    public int getCenterOfRotationX() {
+        return (int) image.getCenterOfRotationX();
+    }
+
+    public int getCenterOfRotationY() {
+        return (int) image.getCenterOfRotationY();
+    }
+
+    public Point getPositionIntoImage(int x, int y) {
+        return image.getDepth(x, y);
     }
 }
