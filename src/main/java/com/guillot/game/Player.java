@@ -9,15 +9,13 @@ import static com.guillot.game.Images.PLAYER;
 import static com.guillot.game.Tile.HEIGHT_MAX;
 import static com.guillot.game.Tile.SIZE;
 import static com.guillot.game.Tile.STEP_HEIGHT;
-import static org.newdawn.slick.Input.MOUSE_LEFT_BUTTON;
-import static org.newdawn.slick.Input.MOUSE_RIGHT_BUTTON;
 
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 
+import com.guillot.engine.gui.Controller;
 import com.guillot.engine.gui.GUI;
-import com.guillot.game.ai.AStar;
-import com.guillot.game.ai.Path;
 
 
 public class Player {
@@ -32,84 +30,84 @@ public class Player {
 
     private HoldingTile holdingTile;
 
-    private long lastStep;
-
     private long lastAnimation;
 
     private int animation;
 
-    private AStar astar;
-
-    private Path path;
-
-    private int currentStep;
-
     public Player(Map map) throws SlickException {
         this.map = map;
-        this.astar = new AStar(map, 100);
         this.position = new Point();
         this.cursorPosition = new Point();
         this.direction = DOWN;
         this.holdingTile = null;
         this.animation = 0;
-        this.lastStep = System.currentTimeMillis();
         this.lastAnimation = System.currentTimeMillis();
     }
 
     public void update() {
         long time = System.currentTimeMillis();
-        if (time - lastStep > 100) {
-            if (path != null) {
-                Point newPosition = path.getStep(currentStep);
-                currentStep++;
-
-                if (position.getX() - newPosition.getX() == 1) {
-                    direction = LEFT;
-                } else if (position.getX() - newPosition.getX() == -1) {
-                    direction = RIGHT;
-                } else if (position.getY() - newPosition.getY() == 1) {
-                    direction = UP;
-                } else if (position.getY() - newPosition.getY() == -1) {
-                    direction = DOWN;
-                }
-                position = newPosition;
-
-                if (currentStep >= path.getLength()) {
-                    path = null;
-                }
-            }
-
-            lastStep = time;
-        }
-
         if (time - lastAnimation > 250) {
             animation++;
             animation %= 2;
             lastAnimation = time;
         }
 
-        int mouseX = GUI.get().getMouseX() - map.getPosition().getX();
-        int mouseY = GUI.get().getMouseY() - map.getPosition().getY();
+        cursorPosition = new Point(position);
+        switch (direction) {
+        case DOWN:
+            cursorPosition.incrementY();
+            break;
+        case LEFT:
+            cursorPosition.decrementX();
+            break;
+        case RIGHT:
+            cursorPosition.incrementX();
+            break;
+        case UP:
+            cursorPosition.decrementY();
+            break;
+        }
 
-        cursorPosition = map.getPositionIntoImage(mouseX, mouseY);
-        if (cursorPosition != null) {
-            if (GUI.get().isMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
-                path = astar.findPath(position, cursorPosition, false);
-                currentStep = 0;
+        if (GUI.get().isKeyPressed(Input.KEY_LEFT) || GUI.get().isKeyPressed(Input.KEY_A) || Controller.get().isLeftPressed()) {
+            if (direction != LEFT) {
+                direction = LEFT;
+            } else if (canWalkLeft()) {
+                position.decrementX();
             }
+        }
 
-            if (GUI.get().isMouseButtonReleased(MOUSE_RIGHT_BUTTON) && position.distanceFrom(cursorPosition) == 1f) {
-                if (isHolding()) {
-                    if (map.increaseDepth(holdingTile, position.getX(), position.getY(), cursorPosition)) {
-                        holdingTile = null;
-                        Sounds.DROP.getSound().play();
-                    }
-                } else {
-                    holdingTile = map.decreaseDepth(position.getX(), position.getY(), cursorPosition);
-                    if (isHolding()) {
-                        Sounds.TAKE.getSound().play();
-                    }
+        if (GUI.get().isKeyPressed(Input.KEY_RIGHT) || GUI.get().isKeyPressed(Input.KEY_D) || Controller.get().isRightPressed()) {
+            if (direction != RIGHT) {
+                direction = RIGHT;
+            } else if (canWalkRight()) {
+                position.incrementX();
+            }
+        }
+
+        if (GUI.get().isKeyPressed(Input.KEY_UP) || GUI.get().isKeyPressed(Input.KEY_W) || Controller.get().isUpPressed()) {
+            if (direction != UP) {
+                direction = UP;
+            } else if (canWalkTop()) {
+                position.decrementY();
+            }
+        }
+
+        if (GUI.get().isKeyPressed(Input.KEY_DOWN) || GUI.get().isKeyPressed(Input.KEY_S) || Controller.get().isDownPressed()) {
+            if (direction != DOWN) {
+                direction = DOWN;
+            } else if (canWalkBottom()) {
+                position.incrementY();
+            }
+        }
+
+        if (GUI.get().isKeyPressed(Input.KEY_E) || GUI.get().isKeyPressed(Input.KEY_SPACE) || Controller.get().isButtonPressed()) {
+            if (isHolding()) {
+                if (map.increaseDepth(holdingTile, position.getX(), position.getY(), cursorPosition)) {
+                    holdingTile = null;
+                    Sounds.DROP.getSound().play();
                 }
+            } else {
+                holdingTile = map.decreaseDepth(position.getX(), position.getY(), cursorPosition);
             }
         }
     }
@@ -130,15 +128,12 @@ public class Player {
         Tile tile = map.getTile(cursorPosition);
         if (tile != null) {
             int x = cursorPosition.getX() * 16 + cursorPosition.getY() * 16;
-            int y = cursorPosition.getY() * 13 - cursorPosition.getX() * 13 + (HEIGHT_MAX - tile.getHeight()) * STEP_HEIGHT + offsetY;
+            int y = cursorPosition.getY() * 13 - cursorPosition.getX() * 13
+                    + (HEIGHT_MAX - tile.getHeight() + tile.getWaterHeight()) * STEP_HEIGHT + offsetY;
 
-            int w = 0;
-            if (position.distanceFrom(cursorPosition) > 0 && position.distanceFrom(cursorPosition) <= 1) {
-                w = 1;
-
-                if ((!isHolding() && tile.getHeight() - getHeight() != 1) || (isHolding() && tile.getHeight() - getHeight() > 0)) {
-                    w = 0;
-                }
+            int w = 1;
+            if ((!isHolding() && tile.getHeight() - getHeight() != 1) || (isHolding() && tile.getHeight() - getHeight() > 0)) {
+                w = 0;
             }
 
             if (isHolding() && w == 1) {

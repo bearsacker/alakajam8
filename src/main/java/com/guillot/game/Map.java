@@ -50,7 +50,7 @@ public class Map {
         }
 
         for (int i = 0; i < 32; i++) {
-            boolean snowed = NumberGenerator.get().randomDouble() > .8f;
+            boolean snowed = false;
             int x = NumberGenerator.get().randomInt(getWidth());
             int y = NumberGenerator.get().randomInt(getWidth());
             int depth = NumberGenerator.get().randomInt(2, 5);

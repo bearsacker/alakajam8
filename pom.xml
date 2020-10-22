@@ -101,7 +101,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.guillot.game.MenuView</mainClass>
+							<mainClass>com.guillot.game.views.MenuView</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>

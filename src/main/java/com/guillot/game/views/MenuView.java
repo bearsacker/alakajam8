@@ -37,10 +37,10 @@ public class MenuView extends View {
         setBackgroundColor(BACKGROUND.getColor());
 
         if (!Sounds.MUSIC.getSound().playing()) {
-            // Sounds.MUSIC.getSound().loop();
+            Sounds.MUSIC.getSound().loop(1f, .5f);
         }
 
-        buttonRun = new Button("Timed Run", EngineConfig.WIDTH / 2 - 96, 336, 192, 32);
+        buttonRun = new Button("Play", EngineConfig.WIDTH / 2 - 96, 336, 192, 32);
         buttonRun.setEvent(new Event() {
 
             @Override
@@ -60,7 +60,7 @@ public class MenuView extends View {
             }
         });
 
-        author = new Text("Bearsucker - 2020", 16, EngineConfig.HEIGHT - 24, YELLOW.getColor());
+        author = new Text("Bearsacker - 2020", 16, EngineConfig.HEIGHT - 24, YELLOW.getColor());
 
         add(buttonRun, buttonQuit, author);
 
